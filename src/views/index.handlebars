@@ -1,0 +1,25 @@
+<ul>
+    {{#if userData}}
+        <li>
+        <a href="/api/session/logout">Logout</a>
+    </li>
+    {{/if}}
+    {{#unless userData}}
+    <li>
+        <a href="/api/session">Login</a>
+    </li>
+    {{/unless}}
+    <li>
+        <a href="/api/session/current">Perfil de usuario</a>
+    </li>
+     <li>
+        <a href="/api/products/ViewAddProduct">Add Product</a>
+    </li>
+     <li>
+        <a href="/api/products/getProduct">List Product</a>
+    </li>
+     <li>
+        <a href="/api/carts/getCart">Cart</a>
+    </li>
+    <hr>
+</ul>
