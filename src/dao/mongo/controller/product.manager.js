@@ -14,7 +14,7 @@ export const addProduct = async (req, res) => {
 }
 // Render de pantalla para agregar productos
 export const viewAddProduct = (req, res) => {
-    res.render('addProduct' , {})
+    res.render('addProduct', {})
 }
 
 //Buscar todos los productos
@@ -28,7 +28,7 @@ export const getProduct = async (req, res) => {
     const category = req.query?.category || ''
     const stockOnly = req.query?.stockOnly === 'true'
     const categorys = await servicesProduct.searchCategory('category')
-   
+
     const search = {}
     if (category) {
         search.category = category
@@ -38,12 +38,12 @@ export const getProduct = async (req, res) => {
     }
     if (query) search.title = { "$regex": query, "$options": "i" }
 
-    const result = await servicesProduct.paginate(search,page,limit,sortField,sortOrder)
+    const result = await servicesProduct.paginate(search, page, limit, sortField, sortOrder)
     result.query = ''
     result.status = 'success'
-    
-    
-    return res.render("products", { payload: result , categorys })
+
+
+    return res.render("products", { payload: result, categorys })
 
 }
 //Buscar un producto

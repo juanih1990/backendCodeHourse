@@ -16,7 +16,7 @@ export const viewRegister = async (req, res) => {
 export const login = async (req, res) => {
         const { email, password } = req.body
         try {
-                const userFound = await serviceSession.searchUserByEmail({ email } , false)
+                const userFound = await serviceSession.searchUserByEmail({ email }, false)
                 if (!userFound) return res.status(400).json({ message: 'user not found' })
 
                 const isMatch = bcrypt.compare(password, userFound.password)
@@ -46,7 +46,7 @@ export const register = async (req, res) => {
         try {
                 const { firest_name, last_name, age, email, password } = req.body
                 const passwordHash = await bcrypt.hash(password, 10)
-                const newUser = await serviceSession.register({ firest_name, last_name, age, email } , passwordHash)
+                const newUser = await serviceSession.register({ firest_name, last_name, age, email }, passwordHash)
                 await newUser.save()
                 const token = generateToken(newUser)
                 res.cookie('cookieJWT', token).redirect('/api/products/getProduct')
@@ -60,12 +60,11 @@ export const logout = async (req, res) => {
         res.clearCookie('cookieJWT');
         res.redirect('/');
 }
-
 //Perfil de usuario .
 export const current = async (req, res) => {
-        const  {user}  = req.user
+        const { user } = req.user
         const email = user.email
-        const perfil = await serviceSession.searchUserByEmail( {email} , true)
+        const perfil = await serviceSession.searchUserByEmail({ email }, true)
         res.render('perfil', { user: perfil })
 }
 

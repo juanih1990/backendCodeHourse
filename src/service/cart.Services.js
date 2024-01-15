@@ -39,8 +39,7 @@ class CartService {
         }
     }
 
-
-    addItem = async(cid) => {
+    addItem = async (cid) => {
         try {
             const showCart = await cartModel.findById(cid)
             if (showCart == null) return res.status(404).json({ message: 'Carrito vacio. Te invitamos a comprar!' })
@@ -50,7 +49,7 @@ class CartService {
         }
     }
 
-    deleteProductCart = async(cid,pid) => {
+    deleteProductCart = async (cid, pid) => {
         try {
             const result = await cartModel.updateOne(
                 { _id: cid, 'products.pid': pid },
@@ -62,7 +61,7 @@ class CartService {
         }
     }
 
-    deleteCart = async(cid)=> {
+    deleteCart = async (cid) => {
         try {
             //cuando borro todo el carrito tambien tengo que borrar carts del cliente
             console.log("entre al servicio")
@@ -73,7 +72,7 @@ class CartService {
         }
     }
 
-    updateQuantity = async(cid,pid , newQuantity ) => {
+    updateQuantity = async (cid, pid, newQuantity) => {
         try {
             const result = await cartModel.updateOne(
                 { _id: cid, 'products.pid': pid },
@@ -83,9 +82,9 @@ class CartService {
         } catch (error) {
             throw error
         }
-       
+
     }
-    
+
 }
 
 export default CartService

@@ -17,13 +17,14 @@ class ProductService {
                 stock,
                 category,
                 status
-        
+
             })
             return newProduct
         } catch (error) {
             throw error
         }
     }
+
     searchOneProduct = async (code) => {
         try {
             return await productModel.findOne({ code })
@@ -49,7 +50,8 @@ class ProductService {
         }
 
     }
-    updateProduct = async (id,body) => {
+
+    updateProduct = async (id, body) => {
         try {
             return await productModel.findByIdAndUpdate(id, body, {
                 new: true
@@ -57,10 +59,10 @@ class ProductService {
         } catch (error) {
             throw error
         }
-       
+
     }
 
-    deleteProduct = async(id) => {
+    deleteProduct = async (id) => {
         try {
             return await productModel.findByIdAndDelete(id)
         } catch (error) {
@@ -68,9 +70,9 @@ class ProductService {
         }
     }
 
-    paginate = async(search,page,limit,sortField,sortOrder) =>{
+    paginate = async (search, page, limit, sortField, sortOrder) => {
         try {
-           const paginate = await productModel.paginate(
+            const paginate = await productModel.paginate(
                 search
                 , {
                     page,
@@ -78,9 +80,9 @@ class ProductService {
                     sort: { [sortField]: sortOrder },
                     lean: true
                 })
-                return paginate
+            return paginate
         } catch (error) {
-            
+
         }
     }
 }

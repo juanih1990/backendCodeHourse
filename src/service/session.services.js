@@ -5,9 +5,9 @@ class SessionService {
         this.sessionModel = new sessionModel()
     }
 
-    searchUserByEmail = async ({email}, useLean = false) => {
+    searchUserByEmail = async ({ email }, useLean = false) => {
         try {
-            const query =  sessionModel.findOne({ email })
+            const query = sessionModel.findOne({ email })
             const userFound = useLean ? await query.lean() : await query
             return userFound
         } catch (error) {
@@ -15,7 +15,7 @@ class SessionService {
         }
     }
 
-    searchUserByID = async(id) => {
+    searchUserByID = async (id) => {
         try {
             const match = await sessionModel.findById(id)
             return match
