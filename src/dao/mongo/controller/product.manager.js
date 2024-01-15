@@ -1,6 +1,8 @@
 import productModel from '../models/product.model.js'
 import mongoose from 'mongoose'
+import ServicesProduct from '../../../service/product.Services.js'
 
+const servicesProduct = new ServicesProduct()
 
 //Crear un Producto
 export const addProduct = async (req, res) => {
@@ -16,7 +18,7 @@ export const addProduct = async (req, res) => {
         status
 
     })
-    const isMatch = await productModel.findOne({ code })
+    const isMatch = await servicesProduct.searchOneProduct(code)
     if (isMatch) return res.status(409).json({ message: "El producto ya esta cargado" })
 
     const resp = await newProduct.save()
@@ -37,7 +39,7 @@ export const getProduct = async (req, res) => {
     const sortOrder = req.query?.order ?? 'asc'
     const category = req.query?.category || ''
     const stockOnly = req.query?.stockOnly === 'true'
-    const categorys = await productModel.distinct('category');
+    const categorys = await servicesProduct.searchCategory('category')
    
     const search = {}
     if (category) {
@@ -65,32 +67,24 @@ export const getProduct = async (req, res) => {
 }
 //Buscar un producto
 export const getProductById = async (req, res) => {
-
     const id = req.params.id
     //veo que id sea un objectID valido es decir que tenga 24 caracteres.    
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ message: 'No existe ningun producto con el id: ' + id })
     }
-    try {
-
-    } catch (error) {
-
-    }
-    const product = await productModel.findById(id)
+    const product = await servicesProduct.searchById(id)
     if (product == null) return res.status(404).json({ message: 'Producto no encontrado' })
     res.json(product)
 }
 //Actualizar un producto
 export const updateProduct = async (req, res) => {
-    const update = await productModel.findByIdAndUpdate(req.params.id, req.body, {
-        new: true
-    })
+    const update = await servicesProduct.updateProduct(req.params.id, req.body)
     if (!update) return res.status(404).json
     res.json(update)
 }
 //Borrar un producto
 export const deleteProduct = async (req, res) => {
-    const deleteProduct = await productModel.findByIdAndDelete(req.params.id)
+    const deleteProduct = await servicesProduct.deleteProduct(req.params.id)
     console.log(req.params.id)
     if (!deleteProduct) return res.status(404).json
     res.sendStatus(204)
