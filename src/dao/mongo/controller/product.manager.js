@@ -1,4 +1,3 @@
-import productModel from '../models/product.model.js'
 import mongoose from 'mongoose'
 import ServicesProduct from '../../../service/product.Services.js'
 
@@ -7,20 +6,9 @@ const servicesProduct = new ServicesProduct()
 //Crear un Producto
 export const addProduct = async (req, res) => {
     const { title, description, price, thumbnail, code, stock, status, category } = req.body
-    const newProduct = new productModel({
-        title,
-        description,
-        price,
-        thumbnail,
-        code,
-        stock,
-        category,
-        status
-
-    })
+    const newProduct = await servicesProduct.addNewProduct({ title, description, price, thumbnail, code, stock, status, category })
     const isMatch = await servicesProduct.searchOneProduct(code)
     if (isMatch) return res.status(409).json({ message: "El producto ya esta cargado" })
-
     const resp = await newProduct.save()
     return res.render('addProduct', {})
 }
@@ -50,14 +38,7 @@ export const getProduct = async (req, res) => {
     }
     if (query) search.title = { "$regex": query, "$options": "i" }
 
-    const result = await productModel.paginate(
-        search
-        , {
-            page,
-            limit,
-            sort: { [sortField]: sortOrder },
-            lean: true
-        })
+    const result = await servicesProduct.paginate(search,page,limit,sortField,sortOrder)
     result.query = ''
     result.status = 'success'
     

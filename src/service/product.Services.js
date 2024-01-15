@@ -6,6 +6,24 @@ class ProductService {
         this.productModel = new productModel()
     }
 
+    addNewProduct = async ({ title, description, price, thumbnail, code, stock, status, category }) => {
+        try {
+            const newProduct = new productModel({
+                title,
+                description,
+                price,
+                thumbnail,
+                code,
+                stock,
+                category,
+                status
+        
+            })
+            return newProduct
+        } catch (error) {
+            throw error
+        }
+    }
     searchOneProduct = async (code) => {
         try {
             return await productModel.findOne({ code })
@@ -47,6 +65,22 @@ class ProductService {
             return await productModel.findByIdAndDelete(id)
         } catch (error) {
             throw error
+        }
+    }
+
+    paginate = async(search,page,limit,sortField,sortOrder) =>{
+        try {
+           const paginate = await productModel.paginate(
+                search
+                , {
+                    page,
+                    limit,
+                    sort: { [sortField]: sortOrder },
+                    lean: true
+                })
+                return paginate
+        } catch (error) {
+            
         }
     }
 }

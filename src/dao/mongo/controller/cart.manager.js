@@ -1,8 +1,8 @@
-import cartModel from '../models/cart.model.js'
-import cartClient from '../models/session.model.js'
 import mongoose from 'mongoose'
 import ServicesCart from '../../../service/cart.Services.js'
+import SessionService from '../../../service/session.services.js'
 
+const serviceSession = new SessionService()
 const serviceCart = new ServicesCart()
 
 //crear el carrito
@@ -13,13 +13,9 @@ export const createCart = async (req, res) => {
         const { user } = req.user
         console.log("ide del usuario " + user._id)
         // Asigna el ID del carrito recién creado a la sesión del usuario
-        const session = await cartClient.findOneAndUpdate(
-            { _id: user._id },
-            { $set: { cart: respuesta._id } },
-            { new: true }
-        )
+        const session = await serviceSession.updateClientCart(user._id, respuesta._id)
         console.log("respues del servicio: " + respuesta)
-    
+
         return res.status(201).json({ cartId: respuesta });
     } catch (error) {
         res.status(500).json({ error: 'Error al crear el carrito.' + error });
@@ -31,9 +27,8 @@ export const getCart = async (req, res) => {
 
     //buscar los carritos que tiene como referencia el cliente  en lugar de cid usar ese parametro
     const { user } = req.user
-    const match = await cartClient.findById(user._id)
+    const match = await serviceSession.searchUserByID(user._id)
     const cid = match.cart
-    // const cid = user.cart
     //veo que cid sea un objectID valido es decir que tenga 24 caracteres.    
     if (!mongoose.Types.ObjectId.isValid(cid)) {
         return res.status(404).json({ message: 'No tiene ningun carrito abierto. Te invitamos a comprar!' })
@@ -58,8 +53,8 @@ export const addItemCart = async (req, res) => {
     try {
         //Busco si el carrito existe
         const cartId = await serviceCart.addItem(cid)
-    
-       //Si el carrito existe reviso si el id del producto que quiero agregar existe dentro del carrito que acabo de buscar
+
+        //Si el carrito existe reviso si el id del producto que quiero agregar existe dentro del carrito que acabo de buscar
         const cartPid = cartId.products.find(product => product.pid == pid);
         //Si el producto existe aumento su cantidad en uno por el momento
         if (cartPid) {
@@ -88,7 +83,7 @@ export const deleteProductCart = async (req, res) => {
     const cid = req.params.cid;
     const pid = req.params.pid;
     try {
-        const result = await serviceCart.deleteProductCart(cid,pid)
+        const result = await serviceCart.deleteProductCart(cid, pid)
         return res.status(200).json({ message: 'Carrito eliminado correctamente' });
     } catch (error) {
         return res.status(500).json({ error: 'Error interno del servidor' });
@@ -112,7 +107,7 @@ export const updateQuantity = async (req, res) => {
     const pid = req.params.pid
     const newQuantity = req.body.quantity
     try {
-        const result = await serviceCart.updateQuantity(cid,pid,newQuantity)
+        const result = await serviceCart.updateQuantity(cid, pid, newQuantity)
         if (result.modifiedCount > 0) {
             return res.status(200).json({ message: 'Cantidad actualizada correctamente' })
         }

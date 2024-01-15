@@ -15,6 +15,15 @@ class SessionService {
         }
     }
 
+    searchUserByID = async(id) => {
+        try {
+            const match = await sessionModel.findById(id)
+            return match
+        } catch (error) {
+            throw error
+        }
+    }
+
     register = async ({ firest_name, last_name, age, email }, passwordHash) => {
         const newUser = new sessionModel({
             firest_name,
@@ -25,6 +34,20 @@ class SessionService {
         })
         return newUser
     }
+
+    updateClientCart = async (userID, cartID) => {
+        try {
+            const session = await sessionModel.findOneAndUpdate(
+                { _id: userID },
+                { $set: { cart: cartID } },
+                { new: true }
+            )
+            return session
+        } catch (error) {
+            throw error
+        }
+    }
+
 }
 
 export default SessionService

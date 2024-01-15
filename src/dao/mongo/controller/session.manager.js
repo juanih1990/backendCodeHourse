@@ -1,5 +1,3 @@
-import sessiontModel from '../models/session.model.js'
-import mongoose from 'mongoose'
 import { generateToken } from '../../../util.js'
 import bcrypt from 'bcrypt'
 import SessionService from '../../../service/session.services.js'
