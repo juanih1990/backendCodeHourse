@@ -61,6 +61,9 @@ app.get('/', (req, res) => {
           res.render('index', {});
       }
 })
+app.get('/' , (req,res) =>{
+    res.render('index' , {})
+})
 app.use('/api/products', productRoutes)
 app.use('/api/carts', cartRoutes)
 app.use('/api/session', sessionRoutes)

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { login, register, logout, renderLogin, current, githublogin, githubcallback, viewRegister } from '../dao/mongo/controller/session.manager.js'
+import { login, register, logout, renderLogin, current, githublogin, githubcallback, viewRegister } from '../controller/session.controller.js'
 import passport from 'passport'
 
 const router = Router()

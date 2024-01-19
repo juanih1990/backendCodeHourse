@@ -1,5 +1,5 @@
 import app from './app.js'
-import { connectDB } from './db.js'
+import config from "./config/config.js"
 
-connectDB()
-app.listen(8080, () => console.log("conectado!!"))
+
+app.listen(config.PORT, () => console.log("OK!"))

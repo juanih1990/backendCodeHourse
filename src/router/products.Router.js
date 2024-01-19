@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { getProduct, getProductById, addProduct ,updateProduct ,deleteProduct , viewAddProduct } from '../dao/mongo/controller/product.manager.js'
+import { getProducts, getProductById, addProduct ,updateProduct ,deleteProduct , viewAddProduct } from '../controller/product.controller.js'
 import passport from 'passport'
 
 const router = Router()
@@ -7,7 +7,7 @@ const router = Router()
 router.get(
             '/getProduct',
             passport.authenticate('jwt' , {session: false}),
-            getProduct 
+            getProducts
 )
 router.get('/getProductById/:id', getProductById)
 router.get(

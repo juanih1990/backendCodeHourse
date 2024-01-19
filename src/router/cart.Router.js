@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { createCart, addItemCart, getCart, deleteProductCart, deleteCarts, updateQuantity } from '../dao/mongo/controller/cart.manager.js'
+import { createCart, addItemCart, getCart, deleteProductCart, deleteCarts, updateQuantity } from '../controller/cart.controller.js'
 import passport from 'passport'
 
 const router = Router()

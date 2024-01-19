@@ -1,33 +1,26 @@
-import mongoose from 'mongoose'
-import ServicesCart from '../../../service/cart.Services.js'
-import SessionService from '../../../service/session.services.js'
-
-const serviceSession = new SessionService()
-const serviceCart = new ServicesCart()
-
-//crear el carrito
-export const createCart = async (req, res) => {
+import { CartService , SessionService } from '../service/index.js'
+import  mongoose from 'mongoose'
+export const createCart = async(req,res) => {
     try {
-        const respuesta = await serviceCart.createCart()
+        const respuesta = await CartService.createCart()
+        console.log("Controller createCart " + respuesta)
         //extraigo el id del usuario del token
         const { user } = req.user
         console.log("ide del usuario " + user._id)
         // Asigna el ID del carrito recién creado a la sesión del usuario
-        const session = await serviceSession.updateClientCart(user._id, respuesta._id)
-        console.log("respues del servicio: " + respuesta)
+        const session = await SessionService.updateClientCart(user._id, respuesta._id)
+        console.log("session actualizada: " + session)
 
         return res.status(201).json({ cartId: respuesta });
     } catch (error) {
         res.status(500).json({ error: 'Error al crear el carrito.' + error });
     }
-
 }
-//Mostrar todos los carritos
-export const getCart = async (req, res) => {
-
+export const getCart = async(req,res) => {
     //buscar los carritos que tiene como referencia el cliente  en lugar de cid usar ese parametro
     const { user } = req.user
-    const match = await serviceSession.searchUserByID(user._id)
+    const match = await SessionService.getSessionById(user._id)
+    console.log("Busco el cart en la session y me trae esto " + match.cart)
     const cid = match.cart
     //veo que cid sea un objectID valido es decir que tenga 24 caracteres.    
     if (!mongoose.Types.ObjectId.isValid(cid)) {
@@ -35,14 +28,15 @@ export const getCart = async (req, res) => {
     }
 
     try {
-        const showCart = await serviceCart.getCartById(cid)
+        const lean = true 
+        const showCart = await CartService.getCartById(cid ,  lean )
+        console.log("Busco el carrito por id y me trae esto" + showCart)
         res.render('cart', { cart: showCart })
     } catch (error) {
         res.status(500).json({ eror: "Error al mostrar el carrito. " + error })
     }
 }
-//Agregar item al carrito .
-export const addItemCart = async (req, res) => {
+export const addItemCart = async(req,res) => {
     const cid = req.params.cid
     const pid = req.params.pid
 
@@ -52,7 +46,9 @@ export const addItemCart = async (req, res) => {
     }
     try {
         //Busco si el carrito existe
-        const cartId = await serviceCart.addItem(cid)
+        const cartId = await CartService.addItem(cid)
+
+
 
         //Si el carrito existe reviso si el id del producto que quiero agregar existe dentro del carrito que acabo de buscar
         const cartPid = cartId.products.find(product => product.pid == pid);
@@ -78,36 +74,33 @@ export const addItemCart = async (req, res) => {
         res.status(500).json({ message: "Error interno del servidor" })
     }
 }
-//Elimina del carrito el producto seleccionado
-export const deleteProductCart = async (req, res) => {
+export const deleteProductCart = async(req,res) => {
     const cid = req.params.cid;
     const pid = req.params.pid;
     try {
-        const result = await serviceCart.deleteProductCart(cid, pid)
+        const result = await CartService.deleteProductCart(cid, pid)
         return res.status(200).json({ message: 'Carrito eliminado correctamente' });
     } catch (error) {
         return res.status(500).json({ error: 'Error interno del servidor' });
     }
 }
-//Elimina el carrito.
-export const deleteCarts = async (req, res) => {
+export const deleteCarts = async(req,res) => {
     const cid = req.params.cid
     try {
         //cuando borro todo el carrito tambien tengo que borrar carts del cliente
-        const result = await serviceCart.deleteCart(cid)
+        const result = await CartService.deleteCart(cid)
         console.log("borre todo el carrito")
         return res.status(200).json({ message: 'Carrito eliminado correctamente' })
     } catch (error) {
         return res.status(500).json({ error: 'Error interno del servidor' })
     }
 }
-//Modifica solo la cantidad en el carrito, por la cantidad pasada
-export const updateQuantity = async (req, res) => {
+export const updateQuantity = async(req,res) => {
     const cid = req.params.cid
     const pid = req.params.pid
     const newQuantity = req.body.quantity
     try {
-        const result = await serviceCart.updateQuantity(cid, pid, newQuantity)
+        const result = await CartService.updateQuantity(cid, pid, newQuantity)
         if (result.modifiedCount > 0) {
             return res.status(200).json({ message: 'Cantidad actualizada correctamente' })
         }
