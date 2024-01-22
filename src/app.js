@@ -9,8 +9,7 @@ import cookieParser from 'cookie-parser'
 import session from 'express-session'
 import passport from 'passport'
 import initializePassport from './config/passport.config.js'
-import jwt from 'jsonwebtoken'
-import config from './config/config.js'
+import { verificarToken } from './middleware/verificarToken.js'
 
 
 
@@ -44,27 +43,10 @@ initializePassport()
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.get('/', (req, res) => {
-      // Verificar si hay un token en las cookies
-      const token = req.cookies.cookieJWT;
-      if (token) {       
-          jwt.verify(token, config.SECRET, (err, decoded) => { //extraer el sectret de una variable de mi envairoment
-              if (err) {
-                  res.render('index', { error: 'Error decodificando el token' });
-              } else {
-                  // Mostrar los datos del usuario en la plantilla
-                  res.render('index', { userData: decoded.user });
-              }
-          });
-      } else {
-          // Si no hay token, renderizar la página de inicio normal
-          res.render('index', {});
-      }
+app.get('/', verificarToken ,(req, res) => {
+    res.render('index', { userData: req.userData  , admin: req.userData.admin});
 })
-app.get('/' , (req,res) =>{
-    res.render('index' , {})
-})
-app.use('/api/products', productRoutes)
+app.use('/api/products',  productRoutes)
 app.use('/api/carts', cartRoutes)
 app.use('/api/session', sessionRoutes)
 export default app

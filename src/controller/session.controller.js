@@ -1,6 +1,8 @@
 import { SessionService } from '../service/index.js'
 import { generateToken } from '../util.js'
 import bcrypt from 'bcrypt'
+import DtoCurrent from '../dto/current.dto.js'
+import config from '../config/config.js'
 
 export const viewRegister = async (req, res) => {
     res.render('register', {})
@@ -11,15 +13,26 @@ export const renderLogin = async (req, res) => {
 export const login = async (req, res) => {
     const { email, password } = req.body
     try {
-        const userFound = await SessionService.getSessionOne({ email }, false)
-        if (!userFound) return res.status(400).json({ message: 'user not found' })
+        let userFound
+        if (email === config.USER && password === config.PASSWORD) {
+            const passwordHash = await bcrypt.hash(password, 10)
+            userFound = {
+                email: config.USER,
+                password: passwordHash,
+                role: 'admin'
+            }
+        }
+        else {
+            userFound = await SessionService.getSessionOne({ email }, false)
+        }
 
+        if (!userFound) return res.status(400).json({ message: 'user not found' })
         const isMatch = bcrypt.compare(password, userFound.password)
 
         if (!isMatch) return res.status(400).json({ message: 'invalid credencial' })
 
         const token = generateToken(userFound)
-
+    
         res.cookie('cookieJWT', token).redirect('/api/products/getProduct')
 
 
@@ -48,8 +61,18 @@ export const logout = async (req, res) => {
 export const current = async (req, res) => {
     const { user } = req.user
     const email = user.email
-    const perfil = await SessionService.getSessionOne({ email }, true)
-    res.render('perfil', { user: perfil })
+    let perfil
+    if (user.role === 'admin') {
+        perfil = {
+            email: config.USER,
+            role: 'admin'
+        }
+    }
+    else {
+        perfil = await SessionService.getSessionOne({ email }, true)
+    }
+    const perfilUser = new DtoCurrent(perfil)
+    res.render('perfil', { user: perfilUser })
 }
 
 export const githublogin = async (req, res) => {

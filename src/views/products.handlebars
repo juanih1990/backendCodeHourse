@@ -1,4 +1,6 @@
 <a href="/">Home</a>
+{{admin}}
+{{payload.admin}}
 <h2>
   <input id="query" placeholder="Search product" value="{{payload.query}}"> <button id="search">Search</button>
 </h2>
@@ -15,17 +17,24 @@ Sort by price: <select id="order" name="category">
   <option value="asc">smallest to largest</option>
   <option value="desc">largest to smallest</option>
 </select>
-
 {{#each payload.docs}}
+
 <h2>----------------------------------------</h2>
 <h3>Product: {{this.title}}</h3>
-<h3>description: {{description}}</h3>
-<h3>price: {{price}}</h3>
-<h3>code: {{code}}</h3>
-<h3>stock: {{stock}}</h3>
-<h3>category: {{category}}</h3>
+<h3>description: {{this.description}}</h3>
+<h3>price: {{this.price}}</h3>
+<h3>code: {{this.code}}</h3>
+<h3>stock: {{this.stock}}</h3>
+<h3>category: {{this.category}}</h3>
+
+{{#if ../payload.admin}}
+
 <button class="delete" data-product-id="{{this._id}}">Delete</button>
+{{/if}}
+{{#unless ../payload.admin}}
 <button class="add" data-cart-id="{{this._id}}">Add to cart</button>
+
+{{/unless}}
 
 {{/each}}
 <h2>----------------------------------------</h2>

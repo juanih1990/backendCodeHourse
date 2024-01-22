@@ -9,8 +9,9 @@ export const getProducts = async(req,res) => {
     const sortOrder = req.query?.order ?? 'asc'
     const category = req.query?.category || ''
     const stockOnly = req.query?.stockOnly === 'true'
+    const admin =  req.userData?.admin ?? false
     const categorys = await ProductService.searchCategory('category')
-
+    console.log( "admin?" + req.userData.admin)
     const search = {}
     if (category) {
         search.category = category
@@ -23,9 +24,10 @@ export const getProducts = async(req,res) => {
     const result = await ProductService.paginate(search, page, limit, sortField, sortOrder)
     result.query = ''
     result.status = 'success'
-
-
-    return res.render("products", { payload: result, categorys })
+    result.admin = admin
+    console.log(result.admin)
+  
+    return res.render("products", { payload: result, categorys   })
 }
 
 export const getProductById = async(req,res) => {
