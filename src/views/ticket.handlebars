@@ -6,4 +6,14 @@
     <h3>Nº de Ticket: {{ticket.code}}</h3>
     <h4>FECHA: {{ticket.purchase_dateTime}}</h4>
     <h4>Total: $ {{ticket.amount}}</h4>
+
+    <hr>
+    <h3>Los siguientes productos no puedieron procesarse por falta de stock</h3>
+    {{#each ticket.purchaser.products}}
+    <h4>Productos: {{this.pid.title}}</h4>
+    <h4>Stock solicitado: {{this.quantity}} de {{this.pid.stock}} disponibles</h4>
+
+
+    {{/each}}
+    <hr>
 </div>
