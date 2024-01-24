@@ -21,8 +21,10 @@
      <li>
         <a href="/api/products/getProduct">List Product</a>
     </li>
+    {{#unless admin}}
      <li>
         <a href="/api/carts/getCart">Cart</a>
     </li>
+      {{/unless}}
     <hr> 
 </ul>
