@@ -3,6 +3,7 @@ import morgan from 'morgan'
 import productRoutes from './router/products.Router.js'
 import cartRoutes from './router/cart.Router.js'
 import sessionRoutes from './router/session.Router.js'
+import ticketRouter from './router/ticket.Router.js'
 import handlebars from 'express-handlebars'
 import __dirname from './util.js'
 import cookieParser from 'cookie-parser'
@@ -15,7 +16,7 @@ import { verificarToken } from './middleware/verificarToken.js'
 
 
 const app = express()
-
+console.log("ENTRO A APP")
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -49,4 +50,5 @@ app.get('/', verificarToken ,(req, res) => {
 app.use('/api/products',  productRoutes)
 app.use('/api/carts', cartRoutes)
 app.use('/api/session', sessionRoutes)
+app.use('/api/ticket', ticketRouter)
 export default app

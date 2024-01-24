@@ -17,6 +17,6 @@ router.post('/:cid/product/:pid', addItemCart)
 router.delete('/:cid/product/:pid', deleteProductCart)
 router.delete('/:cid', deleteCarts)
 router.put('/:cid/product/:pid', updateQuantity)
-router.post('/cid:purchase', purchase)
+router.post('/:cid/purchase', purchase)
 
 export default router
