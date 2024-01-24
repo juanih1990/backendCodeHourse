@@ -37,9 +37,6 @@ export const purchase = async (req, res) => {
     return res.status(201).json({ ticket: createTicket._id })
 
 
-    // AL FINALIZAR MOSTRAR UN TICKET CON SOLO LOS DATOS DE LA COMPRA.
-    //EN CASO DE EXISTIR UNA COMPRA  NO COMPLETADA DEVOLVER LOS IDS CON LOS PRODUCTOS QUE NO PUDIERON PROCESARSE
-
 
 }
 export const getTicketByIdPopulate = async (req, res) => {
