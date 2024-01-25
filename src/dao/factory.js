@@ -30,6 +30,15 @@ switch (opts.persistence) {
 
     case "FILE":
         console.log("Persistencia con FILE")
+        const { default: ProductsFile } = await import('./file/product.file.js')
+        const { default: SessionFile } = await import('./file/session.file.js')
+        const { default: CartsFile } = await import('./file/cart.file.js')
+        const { default: TicketFile } = await import('./file/ticket.file.js')
+
+        producto = ProductsFile
+        session = SessionFile
+        cart = CartsFile
+        ticket = TicketFile
         break
 
     default:

@@ -17,7 +17,8 @@ export default class SessionRepository {
             last_name,
             age,
             email,
-            password: passwordHash
+            password: passwordHash,
+            role : 'user'
         })
         return this.dao.createSession(newUser)
     }

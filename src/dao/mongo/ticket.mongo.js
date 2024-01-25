@@ -10,6 +10,9 @@ export default class Ticket {
     getTicketOne = async ({ search }) => {
         return ticketModel.findOne({ search })
     }
+    getTicketByID = async id => {
+        return ticketModel.findById(id)
+    }
     getTicketByIdPopulate = async (id, useLean = false) => {
         const queryTicket = ticketModel.findById(id)
         const QueryTicketID = useLean ? await queryTicket.populate({

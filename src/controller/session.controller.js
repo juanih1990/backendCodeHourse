@@ -45,8 +45,10 @@ export const register = async (req, res) => {
         const { firest_name, last_name, age, email, password } = req.body
         const passwordHash = await bcrypt.hash(password, 10)
         const newUser = await SessionService.register({ firest_name, last_name, age, email }, passwordHash)
+    
         const token = generateToken(newUser)
         res.cookie('cookieJWT', token).redirect('/api/products/getProduct')
+
     } catch (error) {
         res.status(500).json({ message: error.message })
     }

@@ -1,39 +1,52 @@
 import { ProductService } from '../service/index.js'
 import mongoose from 'mongoose'
+import { opts } from '../config/commander.js'
 
-export const getProducts = async(req,res) => {
-    const limit = parseInt(req.query?.limit ?? 2)
-    const page = parseInt(req.query?.page ?? 1)
-    const query = req.query?.query ?? ''
-    const sortField = req.query?.sort ?? 'price'
-    const sortOrder = req.query?.order ?? 'asc'
-    const category = req.query?.category || ''
-    const stockOnly = req.query?.stockOnly === 'true'
-    const admin =  req.userData?.admin ?? false
-    const categorys = await ProductService.searchCategory('category')
-    console.log( "admin?" + req.userData.admin)
-    const search = {}
-    if (category) {
-        search.category = category
-    }
-    if (stockOnly) {
-        search.stock = { $gt: 0 }
-    }
-    if (query) search.title = { "$regex": query, "$options": "i" }
+export const getProducts = async (req, res) => {
+    try {
+        if (opts.persistence === 'FILE') {
+            const result = await ProductService.getProducts()
+            return res.render("productsFile", { payload: result })
+        }
+        else {
+            const limit = parseInt(req.query?.limit ?? 2)
+            const page = parseInt(req.query?.page ?? 1)
+            const query = req.query?.query ?? ''
+            const sortField = req.query?.sort ?? 'price'
+            const sortOrder = req.query?.order ?? 'asc'
+            const category = req.query?.category || ''
+            const stockOnly = req.query?.stockOnly === 'true'
+            const admin = req.userData?.admin ?? false
+            const categorys = await ProductService.searchCategory('category')
+            console.log("admin?" + req.userData.admin)
+            const search = {}
+            if (category) {
+                search.category = category
+            }
+            if (stockOnly) {
+                search.stock = { $gt: 0 }
+            }
+            if (query) search.title = { "$regex": query, "$options": "i" }
 
-    const result = await ProductService.paginate(search, page, limit, sortField, sortOrder)
-    result.query = ''
-    result.status = 'success'
-    result.admin = admin
-    console.log(result.admin)
-  
-    return res.render("products", { payload: result, categorys   })
+            const result = await ProductService.paginate(search, page, limit, sortField, sortOrder)
+            result.query = ''
+            result.status = 'success'
+            result.admin = admin
+            console.log(result.admin)
+
+            return res.render("products", { payload: result, categorys })
+        }
+    } catch (error) {
+        throw (error)
+    }
+
+
 }
 
-export const getProductById = async(req,res) => {
+export const getProductById = async (req, res) => {
     const id = req.params.id
-     //veo que id sea un objectID valido es decir que tenga 24 caracteres.    
-     if (!mongoose.Types.ObjectId.isValid(id)) {
+    //veo que id sea un objectID valido es decir que tenga 24 caracteres.    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ message: 'No existe ningun producto con el id: ' + id })
     }
     const product = await ProductService.getProductById(id)
@@ -41,7 +54,7 @@ export const getProductById = async(req,res) => {
     res.json(product)
 }
 
-export const addProduct = async(req,res) => {
+export const addProduct = async (req, res) => {
     const { title, description, price, thumbnail, code, stock, status, category } = req.body
     const newProduct = {
         title,
@@ -52,7 +65,7 @@ export const addProduct = async(req,res) => {
         stock,
         status,
         category,
-      }
+    }
     const isMatch = await ProductService.getProductOne(code)
     console.log(isMatch)
     if (isMatch) return res.status(409).json({ message: "El producto ya esta cargado" })
@@ -60,19 +73,19 @@ export const addProduct = async(req,res) => {
     return res.render('addProduct', {})
 }
 
-export const updateProduct = async(req,res) => {
+export const updateProduct = async (req, res) => {
     const update = await ProductService.updateProduct(req.params.id, req.body)
     if (!update) return res.status(404).json
     res.json(update)
 }
 
-export const deleteProduct = async(req,res) => {
+export const deleteProduct = async (req, res) => {
     const deleteProduct = await ProductService.deleteProduct(req.params.id)
     console.log(req.params.id)
     if (!deleteProduct) return res.status(404).json
     res.sendStatus(204)
 }
 
-export const viewAddProduct = async(req,res) => {
+export const viewAddProduct = async (req, res) => {
     res.render('addProduct', {})
 }
