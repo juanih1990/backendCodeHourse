@@ -2,6 +2,8 @@
 
 //EJECUTAR CON PERSISTENCIA FILE  => npm run dev -- --persistence FILE
 
+//Usuario administrador :   user: admin   password: admin  (este usuario puede agregar productos, eliminar productos pero no puede agregar productos al carrito)
+
 //.env
 /*
 PERSISTENCE=MONGO
