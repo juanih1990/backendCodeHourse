@@ -4,6 +4,8 @@
 
 //Usuario administrador :   user: admin   password: admin  (este usuario puede agregar productos, eliminar productos pero no puede agregar productos al carrito)
 
+//Importante, una ves clonado el proyecto hacer un npm i  y crear la carpeta   .env   con el contenido que figura abajo
+
 //.env
 /*
 PERSISTENCE=MONGO
