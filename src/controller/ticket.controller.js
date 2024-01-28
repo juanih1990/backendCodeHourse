@@ -1,7 +1,9 @@
 import { ticketService, CartService, ProductService } from '../service/index.js'
+import CustomError from '../errors/custom.errors.js'
 
-export const purchase = async (req, res) => {
-    const cid = req.params.cid
+export const purchase = async (req, res , next) => {
+    try {
+        const cid = req.params.cid
     const cart = await CartService.getCartById(cid)
     let total = 0
     let ids = []
@@ -30,23 +32,28 @@ export const purchase = async (req, res) => {
     }
 
     const createTicket = await ticketService.createTicket(ticket)
-    console.log("Productos no agregados por falta de stock " + ids)
+    if(!createTicket){
+        CustomError.TicketNotGenerated()
+    }
 
     console.log("TOTAL: " + total)
     console.log("TICKET NUMBER: " + createTicket._id)
+
     return res.status(201).json({ ticket: createTicket._id })
 
-
-
+    } catch (error) {
+        next(error)
+    }
 }
-export const getTicketByIdPopulate = async (req, res) => {
+export const getTicketByIdPopulate = async (req, res , next) => {
     try {
-        console.log("Entro a ticket controller")
         const tid = req.params.tid
         const ticket = await ticketService.getTicketByIdPopulate(tid, true)
+        if(!ticket){
+               CustomError.TicketNotGenerated()
+        }
         return res.render('ticket', { ticket: ticket })
     } catch (error) {
-        console.error("Error al obtener el ticket:", error);
-        res.status(500).send("Error al obtener el ticket");
+        next(error)
     }
 }

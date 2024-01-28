@@ -19,5 +19,4 @@ if (typeof program.opts().persistence === 'undefined') {
     //npm run dev -- --persistence FILE O 'MONGO'
 //---------------------------------------------//
 
-console.log('persistencia' , program.opts().persistence)
 export const opts = program.opts()

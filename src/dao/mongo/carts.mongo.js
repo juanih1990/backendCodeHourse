@@ -1,3 +1,4 @@
+import cartModel from '../mongo/models/cart.model.js'
 import CartModel from '../mongo/models/cart.model.js'
 
 export default class Cart {
@@ -12,13 +13,16 @@ export default class Cart {
         const QueryCartID = useLean ? await query.populate('products.pid').lean().exec() : await query
         return QueryCartID
     }
-    createCart = async product => {
+    updateCart = async product => {
         return CartModel.create(product)
     }
-    updateCart= async (id,body) => {
+    update= async (id,body) => {
         return CartModel.findByIdAndUpdate(id,body , {
             new : true
         })
+    }
+    createCart = async product => {
+        return CartModel.create(product)
     }
     deleteCart = async id => {
         return CartModel.findByIdAndDelete(id)
@@ -46,6 +50,9 @@ export default class Cart {
         }
 
     
+    }
+    save  = async() => {
+        return CartModel.save()
     }
 
 }

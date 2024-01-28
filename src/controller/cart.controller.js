@@ -1,101 +1,128 @@
-import { CartService , SessionService } from '../service/index.js'
-import  mongoose from 'mongoose'
-export const createCart = async(req,res) => {
+import { CartService, SessionService } from '../service/index.js'
+import mongoose from 'mongoose'
+import { opts } from '../config/commander.js'
+import CustomError from '../errors/custom.errors.js'
+
+export const createCart = async (req, res, next) => {
     try {
-        const respuesta = await CartService.createCart()
-        console.log("Controller createCart " + respuesta)
-        //extraigo el id del usuario del token
         const { user } = req.user
-        console.log("ide del usuario " + user._id)
-        // Asigna el ID del carrito recién creado a la sesión del usuario
-        const session = await SessionService.updateClientCart(user._id, respuesta._id)
-        console.log("session actualizada: " + session)
+        let respuesta
+        
+        const ClientOpenCart = await SessionService.getSessionById(user._id)
 
-        return res.status(201).json({ cartId: respuesta });
+        if(!ClientOpenCart.cart){
+            respuesta = await CartService.createCart()
+            const session = await SessionService.updateClientCart(user._id, respuesta)
+            return res.status(201).json({ cartId: respuesta });
+        }
+        else{
+            respuesta = ClientOpenCart.cart
+            return res.status(201).json({ cartId: respuesta });
+        }
+        
+       
+      
+
     } catch (error) {
-        res.status(500).json({ error: 'Error al crear el carrito.' + error });
+        next(error)
     }
 }
-export const getCart = async(req,res) => {
-    //buscar los carritos que tiene como referencia el cliente  en lugar de cid usar ese parametro
+export const getCart = async (req, res, next) => {
+
     const { user } = req.user
-    const match = await SessionService.getSessionById(user._id)
-    console.log("Busco el cart en la session y me trae esto " + match.cart)
-    const cid = match.cart
-    //veo que cid sea un objectID valido es decir que tenga 24 caracteres.    
-    if (!mongoose.Types.ObjectId.isValid(cid)) {
-        return res.status(404).json({ message: 'No tiene ningun carrito abierto. Te invitamos a comprar!' })
-    }
 
+    const match = await SessionService.getSessionById(user._id)
+    const cid = match.cart
     try {
-        const lean = true 
-        const showCart = await CartService.getCartById(cid ,  lean )
-        console.log("Busco el carrito por id y me trae esto" + showCart)
-        res.render('cart', { cart: showCart })
+        if (!mongoose.Types.ObjectId.isValid(cid)) {
+            CustomError.CartNotFound()
+        }
+        //tengo que modificar esta parte para la nueva vista
+        if (opts.persistence === 'MONGO') {
+            const lean = true
+            const showCart = await CartService.getCartById(cid, lean)
+            res.render('cart', { cart: showCart })
+        }
+        else {
+            //  Tengo que  buscar el producto. compararlo con el cart. si esta lo muestro getCartByPid
+            res.render('cartFile', { cart: ProductCartMatch })
+        }
+
     } catch (error) {
-        res.status(500).json({ eror: "Error al mostrar el carrito. " + error })
+        next(error)
     }
 }
-export const addItemCart = async(req,res) => {
-    const cid = req.params.cid
-    const pid = req.params.pid
 
-    //veo que cid sea un objectID valido es decir que tenga 24 caracteres.    
-    if (!mongoose.Types.ObjectId.isValid(cid)) {
-        return res.status(404).json({ message: 'No existe el carrito con  id: ' + cid })
-    }
+export const addItemCart = async (req, res, next) => {
     try {
-        //Busco si el carrito existe
+        const cid = req.params.cid
+        const pid = req.params.pid
+        let saveCart
+        //veo que cid sea un objectID valido es decir que tenga 24 caracteres.    
+        if (opts.persistence === 'MONGO' && !mongoose.Types.ObjectId.isValid(cid)) {
+            CustomError.CartNotFound()
+        }
         const cartId = await CartService.addItem(cid)
-
-
-
-        //Si el carrito existe reviso si el id del producto que quiero agregar existe dentro del carrito que acabo de buscar
-        const cartPid = cartId.products.find(product => product.pid == pid);
-        //Si el producto existe aumento su cantidad en uno por el momento
+        if(!cartId){
+            CustomError.CartNotFound() 
+        }
+        const cartPid = cartId.products.find(product => product.pid == pid)
         if (cartPid) {
             cartPid.quantity = (cartPid.quantity || 0) + 1
-            const saveCart = await cartId.save()
+            if (opts.persistence === 'MONGO') {
+                saveCart = await cartId.save()
+            }
+            else {
+                saveCart = await CartService.save(cartId._id, cartPid.pid)
+            }
             return res.json(saveCart)
         }
-        //Si no existe lo creo.
         else {
             cartId.products.push({
                 pid: pid,
                 quantity: 1
             })
 
-            //guardo el producto en el carrito
-            const saveCart = await cartId.save()
+            if (opts.persistence === 'MONGO') {
+                saveCart = await cartId.save()
+            }
+            else {
+                saveCart = await CartService.save(cartId._id, pid)
+            }
+
             return res.json(saveCart)
         }
     } catch (error) {
-        console.log("Error " + error)
-        res.status(500).json({ message: "Error interno del servidor" })
+        next(error)
     }
 }
-export const deleteProductCart = async(req,res) => {
+export const deleteProductCart = async (req, res , next) => {
     const cid = req.params.cid;
     const pid = req.params.pid;
     try {
         const result = await CartService.deleteProductCart(cid, pid)
+        if(result.modifiedCount === 0){
+            CustomError.DeleteError() 
+        }
         return res.status(200).json({ message: 'Carrito eliminado correctamente' });
     } catch (error) {
-        return res.status(500).json({ error: 'Error interno del servidor' });
+        next(error)
     }
 }
-export const deleteCarts = async(req,res) => {
+export const deleteCarts = async (req, res , next) => {
     const cid = req.params.cid
     try {
         //cuando borro todo el carrito tambien tengo que borrar carts del cliente
         const result = await CartService.deleteCart(cid)
-        console.log("borre todo el carrito")
+        if(!result){
+            CustomError.DeleteError() 
+        }
         return res.status(200).json({ message: 'Carrito eliminado correctamente' })
     } catch (error) {
-        return res.status(500).json({ error: 'Error interno del servidor' })
+        next(error)
     }
 }
-export const updateQuantity = async(req,res) => {
+export const updateQuantity = async (req, res, next) => {
     const cid = req.params.cid
     const pid = req.params.pid
     const newQuantity = req.body.quantity
@@ -105,9 +132,9 @@ export const updateQuantity = async(req,res) => {
             return res.status(200).json({ message: 'Cantidad actualizada correctamente' })
         }
         else {
-            return res.status(404).json({ message: "Ocurrio un problema al actualizar el producto , vuelva a intentarlo" })
+            CustomError.UpdatingError()
         }
     } catch (error) {
-        return res.status(500).json({ error: 'Error interno del servidor' })
+        next(error)
     }
 }

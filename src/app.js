@@ -11,12 +11,12 @@ import session from 'express-session'
 import passport from 'passport'
 import initializePassport from './config/passport.config.js'
 import { verificarToken } from './middleware/verificarToken.js'
-
+import errorHandler from './middleware/error.js'
 
 
 
 const app = express()
-console.log("ENTRO A APP")
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -51,4 +51,5 @@ app.use('/api/products',  productRoutes)
 app.use('/api/carts', cartRoutes)
 app.use('/api/session', sessionRoutes)
 app.use('/api/ticket', ticketRouter)
+app.use(errorHandler)
 export default app

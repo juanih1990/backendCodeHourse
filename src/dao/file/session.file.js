@@ -16,4 +16,8 @@ export default class Session extends FileManager {
         const search = data.find(d => d.email == email)
         return search
     }
+    updateSessionCart = async (id, cartID) => {
+         const update = this.update(id, cartID)
+         return update
+    }
 }

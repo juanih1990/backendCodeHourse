@@ -207,7 +207,7 @@ Sort by price: <select id="order" name="category">
       btnDelete.forEach(button => {
         button.addEventListener('click', (event) => {
           event.preventDefault();
-          const id = button.dataset.productId;
+          const id = button.dataset.productId
           fetch(`/api/products/deleteProduct/${id}`, { method: 'delete' })
             .then(() => {
               alert('Eliminado con éxito')
@@ -216,8 +216,8 @@ Sort by price: <select id="order" name="category">
             .catch(e => {
               alert('No se puede eliminar el producto')
             })
-        });
-      });
+        })
+      })
     }
 
 

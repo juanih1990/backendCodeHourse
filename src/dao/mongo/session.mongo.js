@@ -21,6 +21,7 @@ export default class Session {
         })
     }
     updateSessionCart = async (id, cartID) => {
+       // const randomCartID = mongoose.Types.ObjectId()
         return SessionModel.findOneAndUpdate(
             { _id: id },
             { $set: { cart: cartID } },

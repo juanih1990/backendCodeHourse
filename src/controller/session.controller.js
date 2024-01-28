@@ -3,6 +3,9 @@ import { generateToken } from '../util.js'
 import bcrypt from 'bcrypt'
 import DtoCurrent from '../dto/current.dto.js'
 import config from '../config/config.js'
+import CustomError from '../errors/custom.errors.js'
+
+
 
 export const viewRegister = async (req, res) => {
     res.render('register', {})
@@ -10,7 +13,7 @@ export const viewRegister = async (req, res) => {
 export const renderLogin = async (req, res) => {
     res.render('session', {})
 }
-export const login = async (req, res) => {
+export const login = async (req, res , next) => {
     const { email, password } = req.body
     try {
         let userFound
@@ -25,8 +28,11 @@ export const login = async (req, res) => {
         else {
             userFound = await SessionService.getSessionOne({ email }, false)
         }
+        
+        if (!userFound) {
+            CustomError.loginUser(req.body)   
+        }
 
-        if (!userFound) return res.status(400).json({ message: 'user not found' })
         const isMatch = bcrypt.compare(password, userFound.password)
 
         if (!isMatch) return res.status(400).json({ message: 'invalid credencial' })
@@ -37,12 +43,16 @@ export const login = async (req, res) => {
 
 
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        next(error)
     }
 }
-export const register = async (req, res) => {
-    try {
+export const register = async (req, res, next) => {
+
         const { firest_name, last_name, age, email, password } = req.body
+    try {
+        if(!firest_name || !last_name || !age || !email || !password){
+             CustomError.createUsers(req.body)      
+        }
         const passwordHash = await bcrypt.hash(password, 10)
         const newUser = await SessionService.register({ firest_name, last_name, age, email }, passwordHash)
     
@@ -50,7 +60,7 @@ export const register = async (req, res) => {
         res.cookie('cookieJWT', token).redirect('/api/products/getProduct')
 
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        next(error) 
     }
 }
 
@@ -82,8 +92,8 @@ export const githublogin = async (req, res) => {
 }
 
 export const githubcallback = async (req, res) => {
-    if (!req.user) {
-        return res.status(400).send('invalid github')
-    }
-    res.cookie('cookieJWT', req.user.token).redirect('/api/products/getProduct')
+        if (!req.user) {
+            CustomError.loginGithub()
+        }
+        res.cookie('cookieJWT', req.user.token).redirect('/api/products/getProduct')
 }

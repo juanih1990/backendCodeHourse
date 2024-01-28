@@ -7,9 +7,6 @@ export let session
 export let cart
 export let ticket
 
-
-console.log(`Persistencie with ${opts.persistence}`)
-
 switch (opts.persistence) {
     case "MONGO":
         console.log("Persistencia con MONGO")

@@ -32,6 +32,7 @@ const initializePassport = () => {
 
                         user={}
                     }
+                     
                         const token = generateToken(user)
                         user.token = token
                         return done(null, user)
