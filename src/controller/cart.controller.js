@@ -1,4 +1,4 @@
-import { CartService, SessionService } from '../service/index.js'
+import { CartService, SessionService, ProductService } from '../service/index.js'
 import mongoose from 'mongoose'
 import { opts } from '../config/commander.js'
 import CustomError from '../errors/custom.errors.js'
@@ -7,21 +7,21 @@ export const createCart = async (req, res, next) => {
     try {
         const { user } = req.user
         let respuesta
-        
+
         const ClientOpenCart = await SessionService.getSessionById(user._id)
 
-        if(!ClientOpenCart.cart){
+        if (!ClientOpenCart.cart) {
             respuesta = await CartService.createCart()
             const session = await SessionService.updateClientCart(user._id, respuesta)
             return res.status(201).json({ cartId: respuesta });
         }
-        else{
+        else {
             respuesta = ClientOpenCart.cart
             return res.status(201).json({ cartId: respuesta });
         }
-        
-       
-      
+
+
+
 
     } catch (error) {
         next(error)
@@ -37,15 +37,31 @@ export const getCart = async (req, res, next) => {
         if (!mongoose.Types.ObjectId.isValid(cid)) {
             CustomError.CartNotFound()
         }
-        //tengo que modificar esta parte para la nueva vista
         if (opts.persistence === 'MONGO') {
             const lean = true
             const showCart = await CartService.getCartById(cid, lean)
             res.render('cart', { cart: showCart })
         }
         else {
-            //  Tengo que  buscar el producto. compararlo con el cart. si esta lo muestro getCartByPid
-            res.render('cartFile', { cart: ProductCartMatch })
+            const lean = true
+            const showCart = await CartService.getCartById(cid, lean)
+            const productos = await ProductService.getProducts()
+         
+            const productsPopulate = [];
+
+            showCart.products.forEach(item => {
+            
+                const product = productos.find(producto => producto._id === item.pid)
+                if (product) {
+                    productsPopulate.push({
+                        title: product.title,
+                        price: product.price,
+                        quantity: item.quantity
+                    });
+                }
+            });
+            showCart.productsPopulate = productsPopulate;
+            res.render('cartFile', { cart: showCart })
         }
 
     } catch (error) {
@@ -63,8 +79,8 @@ export const addItemCart = async (req, res, next) => {
             CustomError.CartNotFound()
         }
         const cartId = await CartService.addItem(cid)
-        if(!cartId){
-            CustomError.CartNotFound() 
+        if (!cartId) {
+            CustomError.CartNotFound()
         }
         const cartPid = cartId.products.find(product => product.pid == pid)
         if (cartPid) {
@@ -96,26 +112,26 @@ export const addItemCart = async (req, res, next) => {
         next(error)
     }
 }
-export const deleteProductCart = async (req, res , next) => {
+export const deleteProductCart = async (req, res, next) => {
     const cid = req.params.cid;
     const pid = req.params.pid;
     try {
         const result = await CartService.deleteProductCart(cid, pid)
-        if(result.modifiedCount === 0){
-            CustomError.DeleteError() 
+        if (result.modifiedCount === 0) {
+            CustomError.DeleteError()
         }
         return res.status(200).json({ message: 'Carrito eliminado correctamente' });
     } catch (error) {
         next(error)
     }
 }
-export const deleteCarts = async (req, res , next) => {
+export const deleteCarts = async (req, res, next) => {
     const cid = req.params.cid
     try {
         //cuando borro todo el carrito tambien tengo que borrar carts del cliente
         const result = await CartService.deleteCart(cid)
-        if(!result){
-            CustomError.DeleteError() 
+        if (!result) {
+            CustomError.DeleteError()
         }
         return res.status(200).json({ message: 'Carrito eliminado correctamente' })
     } catch (error) {
