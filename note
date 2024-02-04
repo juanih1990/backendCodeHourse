@@ -18,4 +18,5 @@ CALLBACK_URL = http://localhost:8080/githubcallback
 PORT =8080
 USER = admin
 PASSWORD = admin 
+ENTORNO = desarrollo                             => el entorno puede ser desarrollo o produccion, lo podes modificar desde esta linea
 */

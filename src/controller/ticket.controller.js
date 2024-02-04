@@ -31,15 +31,14 @@ export const purchase = async (req, res , next) => {
         purchaser: cid,
     }
 
-    const createTicket = await ticketService.createTicket(ticket)
-    if(!createTicket){
+    if(total > 0){
+         const createTicket = await ticketService.createTicket(ticket)
+         return res.status(201).json({ ticket: createTicket._id })
+    }
+    else{
         CustomError.TicketNotGenerated()
     }
 
-    console.log("TOTAL: " + total)
-    console.log("TICKET NUMBER: " + createTicket._id)
-
-    return res.status(201).json({ ticket: createTicket._id })
 
     } catch (error) {
         next(error)

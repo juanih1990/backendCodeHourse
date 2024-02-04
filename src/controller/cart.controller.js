@@ -46,11 +46,11 @@ export const getCart = async (req, res, next) => {
             const lean = true
             const showCart = await CartService.getCartById(cid, lean)
             const productos = await ProductService.getProducts()
-         
+
             const productsPopulate = [];
 
             showCart.products.forEach(item => {
-            
+
                 const product = productos.find(producto => producto._id === item.pid)
                 if (product) {
                     productsPopulate.push({

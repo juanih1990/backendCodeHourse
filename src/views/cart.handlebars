@@ -28,17 +28,16 @@
     fetch(`/api/carts/${cid}/purchase`, { method: 'post' })
       .then((res) => {
         if (!res.ok) {
-          throw new Error('Error en la solicitud');
+          throw new Error('Error al generar el ticket');
         }
         return res.json();
       })
       .then((data) => {
-        //capto el numero de ticket para realizar la busqueda por ticket id
-        console.log("hace el fetch de data")
           window.location.href = `/api/ticket/${data.ticket}`
       })
       .catch(e => {
         alert(e)
+    
       });
   }
 </script>

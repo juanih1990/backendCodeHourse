@@ -12,5 +12,6 @@ export default {
     CALLBACK_URL: process.env.CALLBACK_URL,
     PORT: process.env.PORT,
     USER: process.env.USER,
-    PASSWORD: process.env.PASSWORD
+    PASSWORD: process.env.PASSWORD,
+    ENTORNO: process.env.ENTORNO
 }
