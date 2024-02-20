@@ -25,9 +25,12 @@ export default class SessionRepository {
         return this.daoSession.createSession(newUser)
     }
     updateSession = async (id, body) => {
-        return this.daoSession.findByIdAndUpdate(id, body, {
-            new: true
-        })
+        try {
+            return this.daoSession.updateSession(id, body)
+        } catch (error) {
+            console.log("Error R: " + error)
+        }
+       
     }
     deleteSession = async id => {
         return this.daoSession.findByIdAndDelete(id)
@@ -49,11 +52,13 @@ export default class SessionRepository {
         
         // Codificar la cadena de tiempo de expiración para que sea seguro para la URL
         const encodedExpirationTimeString = encodeURIComponent(expirationTimeString)
+        const encodedUserEmail = encodeURIComponent(user.email)
+        const encodedIdUser = encodeURIComponent(user._id)
 
         let html = `<div>Mr ${user.firest_name} ,<h2> Password Reset</h2>
         <p>We heard that you lost your password. Sorry about that!</p>
         <p>But don’t worry! You can use the following link to reset your password:</p>
-        <a href="http://localhost:8080/api/session/recoveryPass?expirationTime=${encodedExpirationTimeString}">Reset your password</a>
+        <a href="http://localhost:8080/api/session/recoveryPass?expirationTime=${encodedExpirationTimeString}&email=${encodedUserEmail}&_id=${encodedIdUser}">Reset your password</a>
         <p>If you don’t use this link within the next hour (${expirationTimeString}), it will expire. 
         <p>Thanks,<br></p></div>`
         const result = this.mailModule.send(user, "Recovery password" , html)

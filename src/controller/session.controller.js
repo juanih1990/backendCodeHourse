@@ -15,6 +15,9 @@ export const renderLogin = async (req, res) => {
 }
 export const login = async (req, res , next) => {
     const { email, password } = req.body
+
+    console.log("EMAIL: " + email )
+    console.log("PASSWORD: " + password)
     try {
         let userFound
         if (email === config.USER && password === config.PASSWORD) {
@@ -32,8 +35,9 @@ export const login = async (req, res , next) => {
         if (!userFound) {
             CustomError.loginUser(req.body)   
         }
-
-        const isMatch = bcrypt.compare(password, userFound.password)
+        
+        const isMatch = await bcrypt.compare(password, userFound.password)
+        console.log("match? " + isMatch)
 
         if (!isMatch) return res.status(400).json({ message: 'invalid credencial' })
 
@@ -125,4 +129,18 @@ export const recoveryPass = async(req,res) => {
         return res.status(400).json({ message: "El enlace de restablecimiento de contraseña ha expirado. Por favor, solicite un nuevo enlace." });
     }
  
+}
+
+export const updatePass = async(req,res) => {
+            //traer del query el _id y el newPass
+            try {
+                const _id = req.params._id;
+                const newPassword = req.params.newPassword;
+                const passwordHash = await bcrypt.hash(newPassword, 10)
+                const update = await SessionService.updateSession(_id,passwordHash)
+                return res.json({ status: 'success', payload: update })
+            } catch (error) {
+                console.log("Error: " + error)
+            }
+         
 }

@@ -16,19 +16,26 @@ export default class Session {
         return SessionModel.create(user)
     }
     updateSession = async (id, body) => {
-        return SessionModel.findByIdAndUpdate(id, body, {
-            new: true
-        })
+        try {
+            return SessionModel.findOneAndUpdate(
+                { _id: id },
+                { $set: { password: body } },
+                { new: true }
+            )
+    } catch(error) {
+        console.log("Error M: " + error)
     }
-    updateSessionCart = async (id, cartID) => {
-       // const randomCartID = mongoose.Types.ObjectId()
-        return SessionModel.findOneAndUpdate(
-            { _id: id },
-            { $set: { cart: cartID } },
-            { new: true }
-        )
-    }
-    deleteSession = async id => {
-        return SessionModel.findByIdAndDelete(id)
-    }
+
+}
+updateSessionCart = async (id, cartID) => {
+    // const randomCartID = mongoose.Types.ObjectId()
+    return SessionModel.findOneAndUpdate(
+        { _id: id },
+        { $set: { cart: cartID } },
+        { new: true }
+    )
+}
+deleteSession = async id => {
+    return SessionModel.findByIdAndDelete(id)
+}
 }
