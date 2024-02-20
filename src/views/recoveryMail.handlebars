@@ -1,0 +1,22 @@
+<h1>Enter your email to reset your password</h1>
+<input id="email" name="email" type="text" placeholder="Email"><br><br>
+<button id="recovery">Enviar link</button>
+<script>
+    const recoveryLink = document.querySelector('#recovery') 
+
+    recoveryLink.onclick = async(event) =>{
+        event.preventDefault()
+        const email = document.querySelector('#email').value 
+        alert(email)
+
+         fetch(`/api/session/reminder/${email}`, { method: 'get' })
+            .then(() => {
+              alert("Revisa tu correo")
+              document.location.href = '/api/session'
+            })
+            .catch(e => {
+              alert(e)
+            });
+
+    }
+</script>

@@ -97,3 +97,37 @@ export const githubcallback = async (req, res) => {
         }
         res.cookie('cookieJWT', req.user.token).redirect('/api/products/getProduct')
 }
+
+export const reminder = async(req,res) => {
+    const {email} = req.params
+
+    console.log("EMAIL DEL USUARIO EN CONTROLLER PARA REMINDER: " + JSON.stringify({email}))
+    const result = await SessionService.reminder({email})
+    return res.json({ status: 'success', payload: result })
+}
+
+export const recovery = async(req,res) => {
+    res.render('recoveryMail', {})
+}
+
+export const recoveryPass = async(req,res) => {
+    console.log("ENTRA EL RECOVERY")
+    const currentTime = new Date()
+    const expirationTime = req.query.expirationTime
+     // Convertir la hora de expiración del enlace a un objeto de tipo Date
+    const expirationDate = new Date(expirationTime);
+
+    console.log("EXPRIACION DATE DESDE CONTROLLER: " + currentTime)
+    console.log("FECHA DE EXPRIACION DESDE EL CONTROLLER DESDE LINK: " + expirationTime)
+
+    // Verificar si la hora actual es menor que la hora de expiración del enlace
+    if (currentTime < expirationDate) {
+        // El enlace aún es válido, permitir al usuario continuar con el restablecimiento de contraseña
+      //  return res.status(200).json({ message: "El enlace de restablecimiento de contraseña es válido." });
+        res.render('recoveryPass', {})
+    } else {
+        // CREAR UN NUEVO ERROR.
+        return res.status(400).json({ message: "El enlace de restablecimiento de contraseña ha expirado. Por favor, solicite un nuevo enlace." });
+    }
+ 
+}

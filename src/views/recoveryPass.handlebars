@@ -1,0 +1,14 @@
+<div>
+    <h1>Recovery Password</h1>
+    <h4>Enter your new password</h4>
+    <input id="password" name="password" type="password" placeholder="Password"> <br><br>
+    <button if="change">Change Password</button>
+</div>
+<script>
+    const changeToLink =  document.querySelector('#change')
+    changeToLink.onclick = async(event) => {
+        event.preventDefault()
+        //en realidad al dar click en el boton tengo que hacer un update del password pero eso va a quedar para mañana
+        document.location.href = '/api/session'
+    }
+</script>

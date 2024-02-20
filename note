@@ -19,4 +19,8 @@ PORT =8080
 USER = admin
 PASSWORD = admin 
 ENTORNO = desarrollo                             => el entorno puede ser desarrollo o produccion, lo podes modificar desde esta linea
+//para envios de mail
+MAIL_USER =juanihernandez1990@gmail.com
+MAIL_PASS =fonaqibqcmyzkass
+
 */

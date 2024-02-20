@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { login, register, logout, renderLogin, current, githublogin, githubcallback, viewRegister } from '../controller/session.controller.js'
+import { login, register, logout, renderLogin, current, githublogin, githubcallback, viewRegister,reminder ,recovery,recoveryPass} from '../controller/session.controller.js'
 import passport from 'passport'
 
 const router = Router()
@@ -23,6 +23,9 @@ router.get(
     '/current',
     passport.authenticate('jwt', {session: false}),
     current)
+router.get('/reminder/:email',reminder)    
+router.get('/recovery' , recovery)
+router.get('/recoveryPass' , recoveryPass)
 
 
 export default router
