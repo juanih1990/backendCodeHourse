@@ -117,13 +117,8 @@ export const recoveryPass = async(req,res) => {
      // Convertir la hora de expiración del enlace a un objeto de tipo Date
     const expirationDate = new Date(expirationTime);
 
-    console.log("EXPRIACION DATE DESDE CONTROLLER: " + currentTime)
-    console.log("FECHA DE EXPRIACION DESDE EL CONTROLLER DESDE LINK: " + expirationTime)
-
     // Verificar si la hora actual es menor que la hora de expiración del enlace
     if (currentTime < expirationDate) {
-        // El enlace aún es válido, permitir al usuario continuar con el restablecimiento de contraseña
-      //  return res.status(200).json({ message: "El enlace de restablecimiento de contraseña es válido." });
         res.render('recoveryPass', {})
     } else {
         // CREAR UN NUEVO ERROR.
