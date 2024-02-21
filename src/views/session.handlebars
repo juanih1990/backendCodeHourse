@@ -5,6 +5,12 @@
     <input id="email" name="email" type="text" placeholder="Email"><br><br>
     <input id="password" name="password" type="password" placeholder="Password"> <br><br>
     <a id="recovery" href="/api/session/recovery">I forgot my password</a><br><br>
+    {{#if payload}}
+    <div id="error-message" style="color: red; font-size: small;"><strong>Error:</strong> The link has expired. If you wish to request a new link, please press <i> forgot my password</i> again.</div><br>
+    {{/if}}
     <a id="register" href="/api/session/viewRegister">register</a><br><br><button type="submit" id="login">Login</button>
     </form>
 </div>
+<script>
+    
+</script>

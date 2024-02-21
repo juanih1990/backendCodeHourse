@@ -37,7 +37,7 @@ export const login = async (req, res , next) => {
         }
         
         const isMatch = await bcrypt.compare(password, userFound.password)
-        console.log("match? " + isMatch)
+       
 
         if (!isMatch) return res.status(400).json({ message: 'invalid credencial' })
 
@@ -120,13 +120,13 @@ export const recoveryPass = async(req,res) => {
     const expirationTime = req.query.expirationTime
      // Convertir la hora de expiración del enlace a un objeto de tipo Date
     const expirationDate = new Date(expirationTime);
-
+    let expiro = false
     // Verificar si la hora actual es menor que la hora de expiración del enlace
     if (currentTime < expirationDate) {
-        res.render('recoveryPass', {})
+        res.render('recoveryPass', {payload: expiro})
     } else {
-        // CREAR UN NUEVO ERROR.
-        return res.status(400).json({ message: "El enlace de restablecimiento de contraseña ha expirado. Por favor, solicite un nuevo enlace." });
+        expiro = true
+        res.render('session', {payload: expiro})
     }
  
 }
@@ -134,11 +134,21 @@ export const recoveryPass = async(req,res) => {
 export const updatePass = async(req,res) => {
             //traer del query el _id y el newPass
             try {
-                const _id = req.params._id;
-                const newPassword = req.params.newPassword;
-                const passwordHash = await bcrypt.hash(newPassword, 10)
-                const update = await SessionService.updateSession(_id,passwordHash)
-                return res.json({ status: 'success', payload: update })
+                const _id = req.params._id
+                const newPassword = req.params.newPassword
+             
+                const user = await SessionService.getSessionById(_id)
+               
+                const isMatch = await bcrypt.compare( newPassword, user.password)
+                if(isMatch) {
+                    return res.json({ status: 'success', payload: false })
+                }
+                else{
+                    const passwordHash = await bcrypt.hash(newPassword, 10)
+                    const update = await SessionService.updateSession(_id,passwordHash)
+                    return res.json({ status: 'success', payload: update })
+                }
+              
             } catch (error) {
                 console.log("Error: " + error)
             }
