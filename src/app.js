@@ -4,6 +4,7 @@ import productRoutes from './router/products.Router.js'
 import cartRoutes from './router/cart.Router.js'
 import sessionRoutes from './router/session.Router.js'
 import ticketRouter from './router/ticket.Router.js'
+import usersRouter from './router/users.Router.js'
 import handlebars from 'express-handlebars'
 import __dirname from './util.js'
 import cookieParser from 'cookie-parser'
@@ -60,11 +61,20 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 app.get('/', verificarToken, (req, res) => {
-    res.render('index', { userData: req.userData, admin: req.userData.admin });
+    const user = req.userData
+    let isPremium = false
+    if(user.role === 'premium'){
+        isPremium = true
+    }
+    else{
+        isPremium = false
+    }
+    res.render('index', { userData: req.userData, admin: req.userData.admin , isPremium});
 })
 app.use('/api/products', productRoutes)
 app.use('/api/carts', cartRoutes)
 app.use('/api/session', sessionRoutes)
 app.use('/api/ticket', ticketRouter)
+app.use('/api/users', usersRouter)
 app.use(errorHandler)
 export default app

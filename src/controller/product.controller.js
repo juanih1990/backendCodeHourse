@@ -10,6 +10,7 @@ export const getProducts = async (req, res, next) => {
             return res.render("productsFile", { payload: result })
         }
         else {
+           console.log("Datos del usuario: " + req.userData.role)
             const limit = parseInt(req.query?.limit ?? 2)
             const page = parseInt(req.query?.page ?? 1)
             const query = req.query?.query ?? ''
@@ -19,7 +20,7 @@ export const getProducts = async (req, res, next) => {
             const stockOnly = req.query?.stockOnly === 'true'
             const admin = req.userData?.admin ?? false
             const categorys = await ProductService.searchCategory('category')
-            console.log("admin?" + req.userData.admin)
+          
             const search = {}
             if (category) {
                 search.category = category
@@ -33,7 +34,12 @@ export const getProducts = async (req, res, next) => {
             result.query = ''
             result.status = 'success'
             result.admin = admin
-            console.log(result.admin)
+            if(req.userData.role === 'premuim'){
+                result.premium = true
+            }
+            else{
+                result.premium = false
+            }
 
             return res.render("products", { payload: result, categorys })
         }
@@ -61,8 +67,10 @@ export const getProductById = async (req, res, next) => {
 
 }
 
-export const addProduct = async (req, res, next) => {
+export const addProduct = async (req, res) => {
     try {
+        const { user } = req.user
+        console.log("USER EMAIL: " + user.email)
         const { title, description, price, thumbnail, code, stock, status, category } = req.body
         const newProduct = {
             title,
@@ -73,6 +81,7 @@ export const addProduct = async (req, res, next) => {
             stock,
             status,
             category,
+            owner : user.email
         }
 
         const isMatch = await ProductService.getProductOne(code)
@@ -83,7 +92,8 @@ export const addProduct = async (req, res, next) => {
         const resp = await ProductService.addProduct(newProduct)
         return res.render('addProduct', {})
     } catch (error) {
-        next(error)
+        console.log(error)
+       // next(error)
     }
 
 }

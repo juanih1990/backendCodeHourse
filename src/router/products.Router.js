@@ -16,7 +16,9 @@ router.get(
     '/ViewAddProduct',
     passport.authenticate('jwt', { session: false }),
     viewAddProduct)
-router.post('/addProduct', addProduct)
+router.post('/addProduct',
+    passport.authenticate('jwt', { session: false }),
+    addProduct)
 router.put('/updateProduct/:id', updateProduct)
 router.delete('/deleteProduct/:id', deleteProduct)
 

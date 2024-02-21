@@ -1,5 +1,4 @@
 <ul>
-    
    {{#if userData}}
         <li>
         <a href="/api/session/logout">Logout</a>
@@ -14,6 +13,11 @@
         <a href="/api/session/current">Perfil de usuario</a>
     </li>
     {{#if admin}}
+     <li>
+        <a href="/api/products/ViewAddProduct">Add Product</a>
+    </li>
+    {{/if}}
+    {{#if isPremium}}
      <li>
         <a href="/api/products/ViewAddProduct">Add Product</a>
     </li>

@@ -22,20 +22,32 @@ export default class Session {
                 { $set: { password: body } },
                 { new: true }
             )
-    } catch(error) {
-        console.log("Error M: " + error)
-    }
+        } catch (error) {
+            console.log("Error M: " + error)
+        }
 
-}
-updateSessionCart = async (id, cartID) => {
-    // const randomCartID = mongoose.Types.ObjectId()
-    return SessionModel.findOneAndUpdate(
-        { _id: id },
-        { $set: { cart: cartID } },
-        { new: true }
-    )
-}
-deleteSession = async id => {
-    return SessionModel.findByIdAndDelete(id)
-}
+    }
+    updateRole = async (id, rol) => {
+        try {
+            return SessionModel.findOneAndUpdate(
+                { _id: id },
+                { $set: { role: rol } },
+                { new: true }
+            )
+        } catch (error) {
+            console.log("Error M: " + error)
+        }
+
+    }
+    updateSessionCart = async (id, cartID) => {
+        // const randomCartID = mongoose.Types.ObjectId()
+        return SessionModel.findOneAndUpdate(
+            { _id: id },
+            { $set: { cart: cartID } },
+            { new: true }
+        )
+    }
+    deleteSession = async id => {
+        return SessionModel.findByIdAndDelete(id)
+    }
 }
