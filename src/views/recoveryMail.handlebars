@@ -7,8 +7,6 @@
     recoveryLink.onclick = async(event) =>{
         event.preventDefault()
         const email = document.querySelector('#email').value 
-        alert(email)
-
          fetch(`/api/session/reminder/${email}`, { method: 'get' })
             .then(() => {
               alert("Revisa tu correo")
