@@ -10,7 +10,6 @@ export const getProducts = async (req, res, next) => {
             return res.render("productsFile", { payload: result })
         }
         else {
-           console.log("Datos del usuario: " + req.userData.role)
             const limit = parseInt(req.query?.limit ?? 2)
             const page = parseInt(req.query?.page ?? 1)
             const query = req.query?.query ?? ''
@@ -34,11 +33,12 @@ export const getProducts = async (req, res, next) => {
             result.query = ''
             result.status = 'success'
             result.admin = admin
-            if(req.userData.role === 'premuim'){
-                result.premium = true
-            }
-            else{
-                result.premium = false
+
+              // Verificar si el usuario es premium
+              if (req.userData.role === 'premium') {
+                result.docs.forEach(product => {
+                    product.isPremium = (product.owner === req.userData.email);
+                });
             }
 
             return res.render("products", { payload: result, categorys })

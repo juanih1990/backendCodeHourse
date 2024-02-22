@@ -26,7 +26,9 @@ Sort by price: <select id="order" name="category">
 <h3>category: {{this.category}}</h3>
 
 {{#if ../payload.admin}}
-
+<button class="delete" data-product-id="{{this._id}}">Delete</button>
+{{/if}}
+{{#if this.isPremium}}
 <button class="delete" data-product-id="{{this._id}}">Delete</button>
 {{/if}}
 {{#unless ../payload.admin}}
