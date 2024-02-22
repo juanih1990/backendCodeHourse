@@ -31,10 +31,14 @@ Sort by price: <select id="order" name="category">
 {{#if this.isPremium}}
 <button class="delete" data-product-id="{{this._id}}">Delete</button>
 {{/if}}
-{{#unless ../payload.admin}}
-<button class="add" data-cart-id="{{this._id}}">Add to cart</button>
 
+{{#unless ../payload.admin}}
+{{#unless this.isPremium}}
+<button class="add" data-cart-id="{{this._id}}">Add to cart</button>
 {{/unless}}
+{{/unless}}
+
+
 
 {{/each}}
 <h2>----------------------------------------</h2>
