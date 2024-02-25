@@ -1,0 +1,9 @@
+paths:
+  /api/users/premium/{uid}:
+    put:
+      summary: Cambiar rol de usuario a premium y viceversa
+      responses:
+        '200':
+          description: Operación exitosa
+      tags:
+        - Usuario

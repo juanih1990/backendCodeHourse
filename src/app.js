@@ -10,6 +10,8 @@ import __dirname from './util.js'
 import cookieParser from 'cookie-parser'
 import session from 'express-session'
 import passport from 'passport'
+import swaggerJSDoc from 'swagger-jsdoc'
+import  SwaggerUiExpress  from 'swagger-ui-express'
 import initializePassport from './config/passport.config.js'
 import { verificarToken } from './middleware/verificarToken.js'
 import errorHandler from './middleware/error.js'
@@ -25,6 +27,23 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.use(loggerMiddleware)
+
+//documentacion
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.1",
+        info:{
+            title: 'Documentacion de proyecto Backend Code-House',
+            description: 'Proyecto de curso Backend'
+        },
+    },
+    
+    apis: [`${__dirname}/docs/**/*.yaml`]
+}
+
+const specs = swaggerJSDoc(swaggerOptions)
+app.use('/apidocs', SwaggerUiExpress.serve , SwaggerUiExpress.setup(specs))
+
 // Ruta de prueba para los logs
 app.get('/LoggerTest', (req, res) => {
     req.logger.debug('Debug log')
