@@ -70,8 +70,8 @@ export const getProductById = async (req, res, next) => {
 export const addProduct = async (req, res) => {
     try {
         const { user } = req.user
-        console.log("USER EMAIL: " + user.email)
         const { title, description, price, thumbnail, code, stock, status, category } = req.body
+        console.log("title " + title)
         const newProduct = {
             title,
             description,
@@ -92,8 +92,8 @@ export const addProduct = async (req, res) => {
         const resp = await ProductService.addProduct(newProduct)
         return res.render('addProduct', {})
     } catch (error) {
-        console.log(error)
-       // next(error)
+        console.log("Error: al agregar el producto " + error)
+       
     }
 
 }

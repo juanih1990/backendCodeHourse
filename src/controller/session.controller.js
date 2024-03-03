@@ -75,20 +75,25 @@ export const logout = async (req, res) => {
 
 
 export const current = async (req, res) => {
-    const { user } = req.user
-    const email = user.email
-    let perfil
-    if (user.role === 'admin') {
-        perfil = {
-            email: config.USER,
-            role: 'admin'
+    try {
+        const { user } = req.user
+        const email = user.email
+        let perfil
+        if (user.role === 'admin') {
+            perfil = {
+                email: config.USER,
+                role: 'admin'
+            }
         }
+        else {
+            perfil = await SessionService.getSessionOne({ email }, true)
+        }
+        const perfilUser = new DtoCurrent(perfil)
+        res.render('perfil', { user: perfilUser })
+    } catch (error) {
+        console.log(error)
     }
-    else {
-        perfil = await SessionService.getSessionOne({ email }, true)
-    }
-    const perfilUser = new DtoCurrent(perfil)
-    res.render('perfil', { user: perfilUser })
+   
 }
 
 export const githublogin = async (req, res) => {
