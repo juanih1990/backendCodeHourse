@@ -14,6 +14,8 @@ export default {
     USER: process.env.USER,
     PASSWORD: process.env.PASSWORD,
     ENTORNO: process.env.ENTORNO,
-    mailUser : process.env.MAIL_USER,
-    mailPass : process.env.MAIL_PASS
+    mailUser: process.env.MAIL_USER,
+    mailPass: process.env.MAIL_PASS,
+    secretpayment:  process.env.SECRETPAYMENT,
+    publicpayment: process.env.PUBLICPAYMENT
 }

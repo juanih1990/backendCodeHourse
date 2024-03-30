@@ -1,8 +1,10 @@
+import { use } from 'chai'
 import SessionModel from '../mongo/models/session.model.js'
 
 export default class Session {
     getSession = async () => {
-        return SessionModel.find()
+        const user =  SessionModel.find().lean() 
+        return user
     }
     getSessionOne = async ({ email }, useLean = false) => {
         const query = SessionModel.findOne({ email })
@@ -40,7 +42,6 @@ export default class Session {
 
     }
     updateSessionCart = async (id, cartID) => {
-        // const randomCartID = mongoose.Types.ObjectId()
         return SessionModel.findOneAndUpdate(
             { _id: id },
             { $set: { cart: cartID } },
@@ -49,5 +50,17 @@ export default class Session {
     }
     deleteSession = async id => {
         return SessionModel.findByIdAndDelete(id)
+    }
+    deleteMany = async (inactive) => {
+        try {
+            const result = await SessionModel.deleteMany(inactive);
+            return result;
+        } catch (error) {
+            throw error;
+        }
+    }
+    findInactive = async (inactive) => {
+        const userinactive = await  SessionModel.find({ last_login: { $lt: inactive } })
+        return userinactive
     }
 }

@@ -1,0 +1,57 @@
+ <a href="/">Home</a><br><br>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col">
+            <table class="table table-bordered text-center">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each users}}
+                    <tr>
+                        <td>{{this.last_name}}</td>
+                        <td>{{this.email}}</td>
+                        <td>{{this.role}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+            <div class="text-center">
+                <button id="deleteInactiveUsersBtn" class="btn btn-danger">Borrar Usuarios Inactivos</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteInactiveUsersBtn = document.getElementById('deleteInactiveUsersBtn')
+
+        deleteInactiveUsersBtn.addEventListener('click', async function () {
+            try {
+                const response = await fetch('/api/users/deleteInactive', {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                       await Swal.fire({
+                        icon: 'success',
+                        title: 'Usuarios eliminados',
+                        text: 'Los usuarios inactivos se han eliminado correctamente.',
+                        timer: 2000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    })
+                    location.reload()
+                } else {
+                    throw new Error('Error al borrar usuarios inactivos.')
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Ocurrió un error al intentar borrar usuarios inactivos.')
+            }
+        })
+    })
+</script>

@@ -1,65 +1,76 @@
-<a href="/">Home</a>
-<h2>
-  <input id="query" placeholder="Search product" value="{{payload.query}}"> <button id="search">Search</button>
-</h2>
-Stock: <input id="stockOnly" type="checkbox"><br><br>
-Category: <select id="category" name="category">
-  <option value="">Select</option>
-  <option value="">All category</option>
-  {{#each categorys}}
-  <option value={{this}}>{{this}}</option>
-  {{/each}}
-</select>
-<br><br>
-Sort by price: <select id="order" name="category">
-  <option value="asc">smallest to largest</option>
-  <option value="desc">largest to smallest</option>
-</select>
-{{#each payload.docs}}
-
-<h2>----------------------------------------</h2>
-<h3>Product: {{this.title}}</h3>
-<h3>description: {{this.description}}</h3>
-<h3>price: {{this.price}}</h3>
-<h3>code: {{this.code}}</h3>
-<h3>stock: {{this.stock}}</h3>
-<h3>category: {{this.category}}</h3>
-
-{{#if ../payload.admin}}
-<button class="delete" data-product-id="{{this._id}}">Delete</button>
-{{/if}}
-{{#if this.isPremium}}
-<button class="delete" data-product-id="{{this._id}}">Delete</button>
-{{/if}}
-
-{{#unless ../payload.admin}}
-{{#unless this.isPremium}}
-<button class="add" data-cart-id="{{this._id}}">Add to cart</button>
-{{/unless}}
-{{/unless}}
-
-
-
-{{/each}}
-<h2>----------------------------------------</h2>
-<br>
-<div>
-  Total Docs: {{ payload.totalPages }}
-  <br><br>
-  Pages:{{payload.page}} / {{ payload.totalPages }}
-  <br><br>
-  Limit: <input id="limit" type="text" value={{ payload.limit }}> <br><br>
-  Page: <input id="page" type="text" value={{ payload.page }}> <br><br>
-
-  <input id="nextPage" type="hidden" value="{{payload.nextPage}}">
-  <input id="prevPage" type="hidden" value="{{payload.prevPage}}">
-  {{#if payload.hasPrevPage}}
-  <a id="btnPrev" href="#">Previus</a>
-  {{/if}}
-  {{#if payload.hasNextPage}}
-  <a id="btnNext" href="#">Next</a>
-  {{/if}}
+<a href="/" class="btn btn-secondary mt-5 m-3">Home</a>
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-6">
+      
+      <h2>
+        <input id="query" class="form-control" placeholder="Search product" value="{{payload.query}}">
+        <button id="search" class="btn btn-primary">Search</button>
+      </h2>
+      <label for="stockOnly">Stock:</label>
+      <input id="stockOnly" class="form-check-input" type="checkbox"><br><br>
+      <label for="category">Category:</label>
+      <select id="category" name="category" class="form-select">
+        <option value="">Seleccionar</option>
+        <option value="">Todas las categorias</option>
+        {{#each categorys}}
+        <option value={{this}}>{{this}}</option>
+        {{/each}}
+      </select>
+      <br><br>
+      <label for="order">Ordenar por precio:</label>
+      <select id="order" name="order" class="form-select">
+        <option value="asc">de menor a mayor</option>
+        <option value="desc">de mayor a menor</option>
+      </select>
+      <h2>----------------------------------------</h2>
+      <div class="row row-cols-1 row-cols-md-2 g-4 mt-3">
+        {{#each payload.docs}}
+        <div class="col">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Product: {{this.title}}</h5>
+              <p class="card-text">Description: {{this.description}}</p>
+              <p class="card-text">Price: {{this.price}}</p>
+              <p class="card-text">Code: {{this.code}}</p>
+              <p class="card-text">Stock: {{this.stock}}</p>
+              <p class="card-text">Category: {{this.category}}</p>
+              {{#if ../payload.admin}}
+              <button class="btn btn-danger delete" data-product-id="{{this._id}}">Delete</button>
+              {{/if}}
+              {{#if this.isPremium}}
+              <button class="btn btn-danger delete" data-product-id="{{this._id}}">Delete</button>
+              {{/if}}
+              {{#unless ../payload.admin}}
+              {{#unless this.isPremium}}
+              <button class="btn btn-success add" data-cart-id="{{this._id}}">Add to cart</button>
+              {{/unless}}
+              {{/unless}}
+            </div>
+          </div>
+        </div>
+        {{/each}}
+      </div>
+      <h2>----------------------------------------</h2>
+      <br>
+      <div>
+        <p>Total Docs: {{ payload.totalPages }}</p>
+        <p>Pages: {{payload.page}} / {{ payload.totalPages }}</p>
+        <p>Limit: <input id="limit" class="form-control" type="text" value={{ payload.limit }}></p>
+        <p>Page: <input id="page" class="form-control" type="text" value={{ payload.page }}></p>
+        <input id="nextPage" type="hidden" value="{{payload.nextPage}}">
+        <input id="prevPage" type="hidden" value="{{payload.prevPage}}">
+        {{#if payload.hasPrevPage}}
+        <a id="btnPrev" class="btn btn-primary" href="#">Previous</a>
+        {{/if}}
+        {{#if payload.hasNextPage}}
+        <a id="btnNext" class="btn btn-primary" href="#">Next</a>
+        {{/if}}
+      </div>
+    </div>
+  </div>
 </div>
+
 
 
 <script>

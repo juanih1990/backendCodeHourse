@@ -19,7 +19,7 @@ export const getProducts = async (req, res, next) => {
             const stockOnly = req.query?.stockOnly === 'true'
             const admin = req.userData?.admin ?? false
             const categorys = await ProductService.searchCategory('category')
-          
+
             const search = {}
             if (category) {
                 search.category = category
@@ -34,8 +34,8 @@ export const getProducts = async (req, res, next) => {
             result.status = 'success'
             result.admin = admin
 
-              // Verificar si el usuario es premium
-              if (req.userData.role === 'premium') {
+            // Verificar si el usuario es premium
+            if (req.userData.role === 'premium') {
                 result.docs.forEach(product => {
                     product.isPremium = (product.owner === req.userData.email);
                 });
@@ -52,7 +52,7 @@ export const getProducts = async (req, res, next) => {
 
 export const getProductById = async (req, res, next) => {
     try {
-        const id = req.params.id 
+        const id = req.params.id
         if (!mongoose.Types.ObjectId.isValid(id)) {
             CustomError.ProductNotFound()
         }
@@ -71,7 +71,9 @@ export const addProduct = async (req, res) => {
     try {
         const { user } = req.user
         const { title, description, price, thumbnail, code, stock, status, category } = req.body
-        console.log("title " + title)
+        if (!title || !description || !price || !thumbnail || !code || !stock || !category) {
+            return res.status(400).json({ error: "Completa todos los campos para agregar el producto." });
+        }
         const newProduct = {
             title,
             description,
@@ -81,19 +83,20 @@ export const addProduct = async (req, res) => {
             stock,
             status,
             category,
-            owner : user.email
+            owner: user.email
         }
 
         const isMatch = await ProductService.getProductOne(code)
+
         if (isMatch) {
             CustomError.ProductInStock()
         }
 
         const resp = await ProductService.addProduct(newProduct)
+
         return res.render('addProduct', {})
     } catch (error) {
         console.log("Error: al agregar el producto " + error)
-       
     }
 
 }
@@ -111,7 +114,7 @@ export const updateProduct = async (req, res, next) => {
 
 }
 
-export const deleteProduct = async (req, res , next) => {
+export const deleteProduct = async (req, res, next) => {
     try {
         const deleteProduct = await ProductService.deleteProduct(req.params.id)
         if (!deleteProduct) {

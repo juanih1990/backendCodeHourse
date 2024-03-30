@@ -12,6 +12,10 @@ const sessionSchema =  new mongoose.Schema({
     cart: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Cart',
+    },
+    last_login: {
+        type: Date,
+        default: Date.now
     }
 },{
     timestamps: true

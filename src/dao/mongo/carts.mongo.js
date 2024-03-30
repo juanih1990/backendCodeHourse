@@ -9,7 +9,7 @@ export default class Cart {
         return CartModel.findOne({ search })
     }
     getCartById = async (id , useLean = false) => {
-        const query =  CartModel.findById(id)
+        const query =  CartModel.findById(id)  
         const QueryCartID = useLean ? await query.populate('products.pid').lean().exec() : await query
         return QueryCartID
     }

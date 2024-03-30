@@ -6,6 +6,8 @@ export let producto
 export let session
 export let cart
 export let ticket
+export let payment 
+export let chat
 
 switch (opts.persistence) {
     case "MONGO":
@@ -17,11 +19,15 @@ switch (opts.persistence) {
         const { default: CartMongo } = await import('./mongo/carts.mongo.js')
         const { default: SessionMongo } = await import('./mongo/session.mongo.js')
         const { default: TicketMongo } = await import('./mongo/ticket.mongo.js')
+        const { default: paymentMongo } = await import('./mongo/payment.mongo.js')
+        const { default: chatMongo } = await import('./mongo/chat.mongo.js')
 
         producto = ProductsMongo
         session = SessionMongo
         cart = CartMongo
         ticket = TicketMongo
+        payment = paymentMongo
+        chat = chatMongo
 
         break
 

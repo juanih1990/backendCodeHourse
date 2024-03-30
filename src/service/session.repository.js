@@ -57,7 +57,7 @@ export default class SessionRepository {
         const expirationTime = new Date();
         expirationTime.setHours(expirationTime.getHours() + 1);
         const expirationTimeString = expirationTime.toLocaleString('en-US', { hour12: true });
-
+        console.log("USER EMAIL!")
         // Codificar la cadena de tiempo de expiración para que sea seguro para la URL
         const encodedExpirationTimeString = encodeURIComponent(expirationTimeString)
         const encodedUserEmail = encodeURIComponent(user.email)
@@ -71,5 +71,23 @@ export default class SessionRepository {
         <p>Thanks,<br></p></div>`
         const result = this.mailModule.send(user, "Recovery password", html)
         return result
+    }
+
+    deleteMany = async (inactive) => {
+        return this.daoSession.deleteMany(inactive);
+    }
+
+    inactiveReminder = async (inactiveTime) => {
+        try {
+            const inactiveUsers = await this.daoSession.findInactive(inactiveTime)
+            inactiveUsers.forEach(async (user) => {
+                const emailContent = `<div>Estimado/a ${user.firest_name},\n\nLamentamos informarle que su cuenta ha sido eliminada debido a la inactividad en el inicio de sesión durante un tiempo prolongado.\n\nAtentamente,\nEl equipo de administración.</div>`;
+                await this.mailModule.send(user, 'Eliminación de cuenta por inactividad', emailContent)
+                console.log(user.email)
+            })
+            return inactiveUsers
+        } catch (error) {
+            throw new Error('Error al buscar usuarios inactivos: ' + error.message)
+        }
     }
 }

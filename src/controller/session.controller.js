@@ -13,10 +13,10 @@ export const viewRegister = async (req, res) => {
 export const renderLogin = async (req, res) => {
     res.render('session', {})
 }
-export const login = async (req, res , next) => {
+export const login = async (req, res, next) => {
     const { email, password } = req.body
 
-    console.log("EMAIL: " + email )
+    console.log("EMAIL: " + email)
     console.log("PASSWORD: " + password)
     try {
         let userFound
@@ -30,19 +30,23 @@ export const login = async (req, res , next) => {
         }
         else {
             userFound = await SessionService.getSessionOne({ email }, false)
+            userFound.last_login = new Date()
+            await userFound.save()
         }
-        
+
         if (!userFound) {
-            CustomError.loginUser(req.body)   
+            CustomError.loginUser(req.body)
         }
-        
+
         const isMatch = await bcrypt.compare(password, userFound.password)
-       
+
 
         if (!isMatch) return res.status(400).json({ message: 'invalid credencial' })
 
+
+
         const token = generateToken(userFound)
-    
+
         res.cookie('cookieJWT', token).redirect('/api/products/getProduct')
 
 
@@ -52,19 +56,19 @@ export const login = async (req, res , next) => {
 }
 export const register = async (req, res, next) => {
 
-        const { firest_name, last_name, age, email, password } = req.body
+    const { firest_name, last_name, age, email, password } = req.body
     try {
-        if(!firest_name || !last_name || !age || !email || !password){
-             CustomError.createUsers(req.body)      
+        if (!firest_name || !last_name || !age || !email || !password) {
+            CustomError.createUsers(req.body)
         }
         const passwordHash = await bcrypt.hash(password, 10)
         const newUser = await SessionService.register({ firest_name, last_name, age, email }, passwordHash)
-    
+
         const token = generateToken(newUser)
         res.cookie('cookieJWT', token).redirect('/api/products/getProduct')
 
     } catch (error) {
-        next(error) 
+        next(error)
     }
 }
 
@@ -93,7 +97,7 @@ export const current = async (req, res) => {
     } catch (error) {
         console.log(error)
     }
-   
+
 }
 
 export const githublogin = async (req, res) => {
@@ -101,61 +105,61 @@ export const githublogin = async (req, res) => {
 }
 
 export const githubcallback = async (req, res) => {
-        if (!req.user) {
-            CustomError.loginGithub()
-        }
-        res.cookie('cookieJWT', req.user.token).redirect('/api/products/getProduct')
+    if (!req.user) {
+        CustomError.loginGithub()
+    }
+    res.cookie('cookieJWT', req.user.token).redirect('/api/products/getProduct')
 }
 
-export const reminder = async(req,res) => {
-    const {email} = req.params
+export const reminder = async (req, res) => {
+    const { email } = req.params
 
-    console.log("EMAIL DEL USUARIO EN CONTROLLER PARA REMINDER: " + JSON.stringify({email}))
-    const result = await SessionService.reminder({email})
+    console.log("EMAIL DEL USUARIO EN CONTROLLER PARA REMINDER: " + JSON.stringify({ email }))
+    const result = await SessionService.reminder({ email })
     return res.json({ status: 'success', payload: result })
 }
 
-export const recovery = async(req,res) => {
+export const recovery = async (req, res) => {
     res.render('recoveryMail', {})
 }
 
-export const recoveryPass = async(req,res) => {
+export const recoveryPass = async (req, res) => {
     console.log("ENTRA EL RECOVERY")
     const currentTime = new Date()
     const expirationTime = req.query.expirationTime
-     // Convertir la hora de expiración del enlace a un objeto de tipo Date
+    // Convertir la hora de expiración del enlace a un objeto de tipo Date
     const expirationDate = new Date(expirationTime);
     let expiro = false
     // Verificar si la hora actual es menor que la hora de expiración del enlace
     if (currentTime < expirationDate) {
-        res.render('recoveryPass', {payload: expiro})
+        res.render('recoveryPass', { payload: expiro })
     } else {
         expiro = true
-        res.render('session', {payload: expiro})
+        res.render('session', { payload: expiro })
     }
- 
+
 }
 
-export const updatePass = async(req,res) => {
-            //traer del query el _id y el newPass
-            try {
-                const _id = req.params._id
-                const newPassword = req.params.newPassword
-             
-                const user = await SessionService.getSessionById(_id)
-               
-                const isMatch = await bcrypt.compare( newPassword, user.password)
-                if(isMatch) {
-                    return res.json({ status: 'success', payload: false })
-                }
-                else{
-                    const passwordHash = await bcrypt.hash(newPassword, 10)
-                    const update = await SessionService.updateSession(_id,passwordHash)
-                    return res.json({ status: 'success', payload: update })
-                }
-              
-            } catch (error) {
-                console.log("Error: " + error)
-            }
-         
+export const updatePass = async (req, res) => {
+    //traer del query el _id y el newPass
+    try {
+        const _id = req.params._id
+        const newPassword = req.params.newPassword
+
+        const user = await SessionService.getSessionById(_id)
+
+        const isMatch = await bcrypt.compare(newPassword, user.password)
+        if (isMatch) {
+            return res.json({ status: 'success', payload: false })
+        }
+        else {
+            const passwordHash = await bcrypt.hash(newPassword, 10)
+            const update = await SessionService.updateSession(_id, passwordHash)
+            return res.json({ status: 'success', payload: update })
+        }
+
+    } catch (error) {
+        console.log("Error: " + error)
+    }
+
 }

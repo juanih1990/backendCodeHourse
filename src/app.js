@@ -5,20 +5,22 @@ import cartRoutes from './router/cart.Router.js'
 import sessionRoutes from './router/session.Router.js'
 import ticketRouter from './router/ticket.Router.js'
 import usersRouter from './router/users.Router.js'
+import chats from './router/chat.router.js'
+import paymentRouter from './router/payment.router.js'
 import handlebars from 'express-handlebars'
 import __dirname from './util.js'
 import cookieParser from 'cookie-parser'
 import session from 'express-session'
 import passport from 'passport'
 import swaggerJSDoc from 'swagger-jsdoc'
-import  SwaggerUiExpress  from 'swagger-ui-express'
+import SwaggerUiExpress from 'swagger-ui-express'
 import initializePassport from './config/passport.config.js'
 import { verificarToken } from './middleware/verificarToken.js'
 import errorHandler from './middleware/error.js'
 import { loggerMiddleware } from './logger/loggers.js'
 import env from './config/config.js'
 
-
+//fonaqibqcmyzkass
 
 const app = express()
 
@@ -32,17 +34,17 @@ app.use(loggerMiddleware)
 const swaggerOptions = {
     definition: {
         openapi: "3.0.1",
-        info:{
+        info: {
             title: 'Documentacion de proyecto Backend Code-House',
             description: 'Proyecto de curso Backend'
         },
     },
-    
+
     apis: [`${__dirname}/docs/**/*.yaml`]
 }
 
 const specs = swaggerJSDoc(swaggerOptions)
-app.use('/apidocs', SwaggerUiExpress.serve , SwaggerUiExpress.setup(specs))
+app.use('/apidocs', SwaggerUiExpress.serve, SwaggerUiExpress.setup(specs))
 
 // Ruta de prueba para los logs
 app.get('/LoggerTest', (req, res) => {
@@ -50,8 +52,8 @@ app.get('/LoggerTest', (req, res) => {
     req.logger.info('Info log')
     req.logger.warn('Warning log')
     req.logger.error('Error log')
-   //  req.logger.fatal('Fatal log') en el tp dice de incluir fatal. pero no existe fatal en winston
-  
+    //  req.logger.fatal('Fatal log') en el tp dice de incluir fatal. pero no existe fatal en winston
+
     res.send('Errores generados en el entorno ' + env.ENTORNO)
 })
 
@@ -82,18 +84,20 @@ app.use(passport.session())
 app.get('/', verificarToken, (req, res) => {
     const user = req.userData
     let isPremium = false
-    if(user.role === 'premium'){
+    if (user.role === 'premium') {
         isPremium = true
     }
-    else{
+    else {
         isPremium = false
     }
-    res.render('index', { userData: req.userData, admin: req.userData.admin , isPremium});
+    res.render('index', { userData: req.userData, admin: req.userData.admin, isPremium });
 })
 app.use('/api/products', productRoutes)
 app.use('/api/carts', cartRoutes)
 app.use('/api/session', sessionRoutes)
 app.use('/api/ticket', ticketRouter)
 app.use('/api/users', usersRouter)
+app.use('/api/chats', chats)
+app.use('/api/payment', paymentRouter)
 app.use(errorHandler)
 export default app
