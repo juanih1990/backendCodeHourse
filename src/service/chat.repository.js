@@ -3,19 +3,22 @@ export default class ChatRepository {
         this.dao = dao
     }
     getChats = async () => {
-        return this.dao.getchats()
+        return this.dao.getChats()
     }
     getChatsById = async id => {
-        return this.dao.getchatsById(id)
+        return this.dao.getChatsById(id)
+    }
+    save = async (id, user, message) => {
+        return this.dao.saveMessage(id, user, message)
     }
     addChats = async chats => {
-        return  this.dao.createChats(chats)
+        return this.dao.createChats(chats)
     }
-    updateChats = async (id,body) => {
-       return  this.dao.updateChats(id,body) 
+    updateChats = async (id, body) => {
+        return this.dao.updateChats(id, body)
     }
     deleteChats = async id => {
-        return  this.dao.deleteChats(id)
+        return this.dao.deleteChats(id)
     }
-   
+
 }
