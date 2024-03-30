@@ -1,7 +1,7 @@
 import { SessionService } from '../service/index.js'
-//import CustomError from '../errors/custom.errors.js'
+import CustomError from '../errors/custom.errors.js'
 
-export const changeRol = async (req, res) => {
+export const changeRol = async (req, res , next) => {
     try {
         const uid = req.params.uid
 
@@ -22,7 +22,23 @@ export const changeRol = async (req, res) => {
             }
         }
     } catch (error) {
-        console.log("Error: " + error)
+        next(error)
+    }
+}
+export const updateRol = async (req, res , next ) => {
+    try {
+        const uid = req.params.uid
+        const newRole = req.body.role
+        const user = await SessionService.getSessionById(uid)
+        if (!user) {
+            CustomError.loginUser(user)
+        }
+        else {
+                const update = await SessionService.updateRole(user._id, newRole)
+                return res.json({ status: 'success', payload: update })
+        }
+    } catch (error) {
+        next(error)
     }
 }
 export const allUsers = async (req, res) => {
