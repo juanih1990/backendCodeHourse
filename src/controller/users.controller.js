@@ -70,3 +70,15 @@ export const deleteInactive = async(req,res) => {
         res.status(500).send({ error: 'Error al intentar borrar usuarios inactivos.' });
     }
 }
+export const deleteUser = async (req, res) => {
+    try {
+         const uid = req.params.uid
+         console.log("ID DESDE CONTROLLER: 2 //" + uid)
+         const userDelete = await SessionService.deleteSession(uid)
+         res.sendStatus(204)
+    } catch (error) {
+        console.log("Error al obtener la sesión:", error)
+        res.status(500).send("Error interno del servidor")
+    }
+
+}

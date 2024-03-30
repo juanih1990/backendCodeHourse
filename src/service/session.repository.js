@@ -41,7 +41,7 @@ export default class SessionRepository {
 
     }
     deleteSession = async id => {
-        return this.daoSession.findByIdAndDelete(id)
+        return this.daoSession.deleteSession(id)
     }
     updateClientCart = async (userID, cartID) => {
         try {
