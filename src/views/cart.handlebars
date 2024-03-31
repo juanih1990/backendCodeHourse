@@ -37,7 +37,7 @@
             confirmButtonText: 'OK'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = `http://localhost:8080/api/payment/paymentView?cartId=${cid}`
+                window.location.href = `/api/payment/paymentView?cartId=${cid}`
             }
         })
 }
