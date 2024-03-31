@@ -10,7 +10,7 @@ export const getProducts = async (req, res, next) => {
             return res.render("productsFile", { payload: result })
         }
         else {
-            const limit = parseInt(req.query?.limit ?? 2)
+            const limit = parseInt(req.query?.limit ?? 4)
             const page = parseInt(req.query?.page ?? 1)
             const query = req.query?.query ?? ''
             const sortField = req.query?.sort ?? 'price'

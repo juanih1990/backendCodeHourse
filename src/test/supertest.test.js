@@ -60,11 +60,11 @@ describe('Testing /api/products', () => {
     describe('paso 2- /api/products/addProduct debe crear un producto', () => {
         it('luego guardo el producto en la BD /api/products/addProduct', async () => {
             const productTesting = {
-                title: faker.commerce.productName(),
+                title: faker.commerce.productName().replace(/\s/g, ''),
                 description: faker.commerce.productDescription(),
                 price: faker.datatype.number({ min: 1, max: 99999 }),
-                thumbnail: faker.internet.domainName(),
-                code: faker.random.alphaNumeric(20),
+                thumbnail: faker.internet.domainName().slice(0, 30),
+                code: faker.random.alphaNumeric(5),
                 stock: faker.datatype.number({ min: 1, max: 99999 }),
                 category: faker.commerce.department(),
             }

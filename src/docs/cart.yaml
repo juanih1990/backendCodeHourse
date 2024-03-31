@@ -51,5 +51,4 @@ paths:
         '200':
           description: Operación exitosa
       tags:
-        - Carrito
-
+        - Carritos

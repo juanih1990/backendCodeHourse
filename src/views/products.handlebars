@@ -2,7 +2,7 @@
 <div class="container mt-5">
   <div class="row">
     <div class="col-md-6">
-      
+
       <h2>
         <input id="query" class="form-control" placeholder="Search product" value="{{payload.query}}">
         <button id="search" class="btn btn-primary">Search</button>
@@ -204,19 +204,24 @@
           const response = await fetch(`/api/carts`, { method: 'post' })  //creo el carrito
           const cartId = await response.json(); // Suponiendo que el servidor devuelve un JSON con el ID
 
-          console.log("ID del carrito " + cartId.cartId)
-          console.log("ID del producto " + pid)
-
           fetch(`/api/carts/${cartId.cartId}/product/${pid}`, { method: 'post' })
             .then(() => {
-              alert("producto agregado al carrito")
-              document.location.href = '/api/products/getProduct'
+              Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: '¡Producto agregado al carrito!',
+              }).then(() => {
+                document.location.href = '/api/products/getProduct';
+              })
             })
             .catch(e => {
-              alert(e)
-            });
+              Swal.fire({
+                icon: 'error',
+                title: '¡Error!',
+                text: 'Ha ocurrido un error al agregar el producto al carrito.',
+              })
+            })
         }
-
       })
     }
 

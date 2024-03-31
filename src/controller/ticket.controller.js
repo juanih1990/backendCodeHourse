@@ -44,15 +44,16 @@ export const purchase = async (req, res , next) => {
         next(error)
     }
 }
-export const getTicketByIdPopulate = async (req, res , next) => {
+export const getTicketByIdPopulate = async (req, res ) => {
     try {
+        const { user } = req.user
         const tid = req.params.tid
-        const ticket = await ticketService.getTicketByIdPopulate(tid, true)
-        if(!ticket){
-               CustomError.TicketNotGenerated()
-        }
+        const ticket = await ticketService.getTicketByIdPopulate(user,tid, true)
+       // if(!ticket){
+            //   CustomError.TicketNotGenerated()
+    //    }
         return res.render('ticket', { ticket: ticket })
     } catch (error) {
-        next(error)
+        console.log(error)
     }
 }
