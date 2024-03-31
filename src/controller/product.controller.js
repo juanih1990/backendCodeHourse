@@ -70,7 +70,8 @@ export const getProductById = async (req, res, next) => {
 export const addProduct = async (req, res) => {
     try {
         const { user } = req.user
-        const { title, description, price, thumbnail, code, stock, status, category } = req.body
+        const { title, description, price, thumbnail, code, stock, category } = req.body
+        console.log(title, description, price,thumbnail,code,stock,category)
         if (!title || !description || !price || !thumbnail || !code || !stock || !category) {
             return res.status(400).json({ error: "Completa todos los campos para agregar el producto." });
         }
@@ -81,7 +82,6 @@ export const addProduct = async (req, res) => {
             thumbnail,
             code,
             stock,
-            status,
             category,
             owner: user.email
         }
@@ -89,14 +89,14 @@ export const addProduct = async (req, res) => {
         const isMatch = await ProductService.getProductOne(code)
 
         if (isMatch) {
-            CustomError.ProductInStock()
+            CustomError.ProductNotFound()
         }
 
         const resp = await ProductService.addProduct(newProduct)
 
-        return res.render('addProduct', {})
+        return  res.json({})
     } catch (error) {
-        console.log("Error: al agregar el producto " + error)
+        next(error)
     }
 
 }

@@ -38,25 +38,47 @@
     </div>
 </div>
 <script>
-    const form = document.querySelector("form");
-    form.addEventListener("submit", async (event) => {
-        event.preventDefault()
+    document.addEventListener("DOMContentLoaded", function() {
+        const form = document.querySelector("form");
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
 
-        const formData = new FormData(form);
-        const response = await fetch(form.action, {
-            method: form.method,
-            body: formData
+            const formData = {
+                title: document.getElementById("title").value,
+                description: document.getElementById("description").value,
+                price: document.getElementById("price").value,
+                thumbnail: document.getElementById("thumbnail").value,
+                code: document.getElementById("code").value,
+                stock: document.getElementById("stock").value,
+                category: document.getElementById("category").value
+            };
+
+
+            console.log(formData);
+
+            const response = await fetch(form.action, {
+               method: form.method,
+                headers: {
+                    'Content-Type': 'application/json' // Asegura que los datos se envíen como JSON
+                },
+                body: JSON.stringify(formData) // Convierte el objeto en formato JSON
+            });
+
+            const responseData = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    text: 'El producto se agregó con éxito'
+                }).then(() => {
+                    window.location.href = "/api/products/ViewAddProduct";
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Por favor, completa todos los campos para agregar el producto'
+                });
+            }
         });
-
-        const responseData = await response.json();
-
-        if (response.ok) {
-            window.location.href = "http://localhost:8080/api/products/ViewAddProduct"
-        } else {
-            Swal.fire({
-                icon: 'error',
-                text: responseData.error,
-            })
-        }
-    })
+    });
 </script>
