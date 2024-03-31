@@ -225,22 +225,35 @@
       })
     }
 
-    if (btnDelete) {
-      btnDelete.forEach(button => {
-        button.addEventListener('click', (event) => {
-          event.preventDefault();
-          const id = button.dataset.productId
-          fetch(`/api/products/deleteProduct/${id}`, { method: 'delete' })
-            .then(() => {
-              alert('Eliminado con éxito')
-              document.location.href = '/api/products/getProduct'
-            })
-            .catch(e => {
-              alert('No se puede eliminar el producto')
-            })
+   if (btnDelete) {
+    btnDelete.forEach(button => {
+        button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const id = button.dataset.productId
+            try {
+                const response = await fetch(`/api/products/deleteProduct/${id}`, { method: 'delete' })
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Producto eliminado con éxito',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        document.location.href = '/api/products/getProduct'
+                    });
+                } else {
+                    throw new Error('No se puede eliminar el producto')
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message
+                })
+            }
         })
-      })
-    }
+    })
+}
 
 
   })
